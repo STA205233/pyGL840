@@ -220,7 +220,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]*?)</b>", csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None,) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]*?)</b>", csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
         """
         Acquire the data of GL840
 
@@ -241,6 +241,7 @@ class DataAcquisition():
         self.strip_word = strip_word
         self.__initialized = False
         self.__is_single = False
+        self.__override = override
         self.config = status
         self.pattern = re.compile(pat)
         self.func: list[Callable] = [
@@ -278,7 +279,7 @@ class DataAcquisition():
             self.__is_single = True
             return 0
         self.writer = Writer(csv_file=self.csv_file,
-                             buffer_num=self.write_interval)
+                             buffer_num=self.write_interval, override=self.__override)
         self.writer.write([["Time", *self.config.channel_name], ])
         self.__is_single = True
         self.__initialized = True
@@ -287,7 +288,13 @@ class DataAcquisition():
     def data_acquire(self, waitfor: int = 0, timeout: int = 5) -> None:
         if not self.__initialized and self.csv_file is not None:
             raise NotInitializedMultiException
-        site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+
+        if self.config.username is not None and self.config.password is not None:
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+        else:
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
+        if (site_data.text.find("Unauthorized") >= 0):
+            raise requests.ConnectionError("Password authorization failed")
         temp = re.findall(self.pattern, site_data.text)
         if len(temp) != self.config.channels:
             raise ValueError(
@@ -330,7 +337,7 @@ class DataAcquisition():
 
 
 class Writer():
-    def __init__(self, csv_file: str, buffer_num: int, queue: Optional[Queue] = None) -> None:
+    def __init__(self, csv_file: str, buffer_num: int, queue: Optional[Queue] = None, override: bool = False) -> None:
 
         self.buffer: list[Any] = []
         self.queue = queue
@@ -340,8 +347,10 @@ class Writer():
             self.__newline: Optional[str] = ""
         else:
             self.__newline = None
-        if exists(csv_file):
+        if exists(csv_file) and not override:
             raise FileExistsError(f"{csv_file} does exist!")
+        fp = open(self.csv_file, mode="w", newline=self.__newline)
+        fp.close()
 
     def get(self, timeout: int) -> None:
         if self.queue is None:
