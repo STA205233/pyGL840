@@ -1,0 +1,11 @@
+{
+  "ws_host": "localhost",
+  "ws_port": "8080",
+  "title": "HSQuickLook",
+  "ti_scaling": 64,
+  "schema_list": {
+    "GL840": {
+      "GL840": "user_data/schema/GL840.js"
+    }
+  }
+}
