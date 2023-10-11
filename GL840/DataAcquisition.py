@@ -249,9 +249,12 @@ class DataAcquisition():
         self.mongo_client = mongo
         self.num_event_per_file = num_event_per_file
         self.event_index = 0
+        self.file_index = 0
         self.timeout_multi = 0
-        self.__csv_file = ""
-        self.__update_file()
+        if self.csv_file_base is None:
+            self.__csv_file = ""
+        else:
+            self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
 
     def initialize_multi(self, timeout: int = 5) -> int:
         """
@@ -346,8 +349,9 @@ class DataAcquisition():
     def __update_file(self) -> None:
         if (self.num_event_per_file is None) or (self.csv_file_base is None):
             return
-        if self.event_index > self.num_event_per_file:
-            self.__csv_file = self.csv_file_base + str(self.event_index) + ".csv"
+        if self.event_index >= self.num_event_per_file:
+            self.file_index += 1
+            self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
             if self.__is_single:
                 self.finalize_single(False)
                 self.initialize_single()
