@@ -7,7 +7,7 @@
 
 ## Installation
 
-The module is put in GL840. You may have to put this path to the environment variable PYTHONPATH.
+The module is put in GL840. You may have to add this path to the environment variable PYTHONPATH.
 
 ### Requirements
 
@@ -20,6 +20,9 @@ The module is put in GL840. You may have to put this path to the environment var
 #### For HSQuickLook
 
 If you use HSQuickLook(<https://github.com/odakahirokazu/HSQuicklook>), you must also install below.
+
+- HSQuickLook
+  Multi-purpose web-based data monitoring system. For more details, please look at the link(<https://github.com/odakahirokazu/HSQuicklook>)
 
 - pymongo
 
