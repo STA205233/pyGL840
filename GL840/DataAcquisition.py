@@ -220,7 +220,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]*?)</b>", csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?)(?:<font size=6>&nbsp;</font>)*?</b>", csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
         """
         Acquire the data of GL840
 
@@ -296,6 +296,8 @@ class DataAcquisition():
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         temp = re.findall(self.pattern, site_data.text)
+        print(site_data.text)
+        print(temp)
         if len(temp) != self.config.channels:
             raise ValueError(
                 f"The length of input data ({len(temp)}) does not match Channel number ({self.config.channels}).")
