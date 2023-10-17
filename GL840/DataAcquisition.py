@@ -256,6 +256,14 @@ class DataAcquisition():
         else:
             self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
 
+    def set_function(self, index: int, func: Callable) -> None:
+        if index > self.config.channels:
+            print(f"Index({index}) is larger than the number of channels({self.config.channels})")
+            return
+        elif index < 0:
+            print(f"Index({index}) is smaller than 0")
+        self.func[index] = func
+
     def initialize_multi(self, timeout: int = 5) -> int:
         """
         Initialize multi process.
@@ -271,6 +279,9 @@ class DataAcquisition():
         if self.csv_file_base is None:
             self.__initialized = True
             return 0
+        if self.num_event_per_file is None:
+            print("num_event_per_file is unsupported in multi thread mode")
+            return -1
         self.timeout_multi = timeout
         self.query: Queue = Queue(maxsize=self.maxsize)
         self.writer = Writer(csv_file=self.__csv_file,
@@ -358,7 +369,7 @@ class DataAcquisition():
             else:
                 self.finalize_multi(False)
                 self.initialize_multi(self.timeout_multi)
-            self.event_index = 0
+            self.event_index = 1
         else:
             self.event_index += 1
 
