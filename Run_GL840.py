@@ -6,13 +6,17 @@ import GL840.Converter as Converter
 
 
 def run():
-    channel_name = [f"ch{i+1}" for i in range(20)]  # The length of channel name must be the number of enabled channels
+    # The length of channel name must be the number of enabled channels
+    channel_name = [f"Ch{i+1}" for i in range(20)]
     channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
-    config = Daq.GL840Configuration("192.168.0.1", 80, username="GL840", password="GL840")
+    config = Daq.GL840Configuration(
+        "192.168.0.1", 80, username="GL840", password="GL840")
+    # config.channel_status = [True, False, True] + [False for i in range(17)]
     config.channel_status = [True for i in range(20)]
     config.channel_name = channel_name
-    daq = Daq.DataAcquisition(config, csv_file_base="test", mongo=mongo, override=True, num_event_per_file=100, )
+    daq = Daq.DataAcquisition(
+        config, csv_file_base="test.csv", mongo=mongo, override=True, num_event_per_file=100)
     daq.set_function(0, Converter.Unity)
     daq.initialize_single()
     while 1:

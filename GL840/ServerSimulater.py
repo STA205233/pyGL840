@@ -7,7 +7,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("User-Agent", "test1")
         self.end_headers()
-        html = "<b>&nbsp;+ 20.6</b><b>&nbsp;- 21.0</b><b>&nbsp;+ 1.2</b><b>&nbsp;+ 1.2</b>" + "<b>&nbsp;Off</b><b>&nbsp;Off</b>" * 8
+        html = "<b>&nbsp;+ 20.6</b><b>&nbsp;- 21.0</b><b>&nbsp;+ 1.2</b><b>&nbsp;+ 1.2</b>" + \
+            "<b>&nbsp;Off</b><b>&nbsp;Off</b>" * 7\
+            + "<b>&nbsp;BURNOUT<font size=6>&nbsp;</font></b>" + \
+            "<b>&nbsp;******<font size=6>&nbsp;</font></b>"
         self.wfile.write(html.encode())
 
 
