@@ -132,7 +132,7 @@ class GL840Configuration():
     def channel_status(self, value: list[bool]) -> None:
         if len(value) != self.channels:
             raise ValueError(
-                f"The length of channel status{len(value)} does not match the number of channels ({self.channels})")
+                f"The length of channel status ({len(value)}) does not match the number of channels ({self.channels})")
         self.__channel_status = value
         for i in range(len(value) - 1, -1, -1):
             if not value[i]:
@@ -150,7 +150,8 @@ class GL840Configuration():
             raise ValueError(
                 f"The length of input array ({len(value)}) is invalid. It must be the same as The number of channels ({self.channels}). Note that each channel name must be different")
         self.__channel_name = value
-        print(f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
+        print(
+            f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
 
 
 class NotInitializedMultiException(Exception):
@@ -173,7 +174,7 @@ class GL840Data(MongoDBData):
 
     """
 
-    def __init__(self, data: list[float], status: GL840Configuration, directory: str = "GL840", document: str = "GL840") -> None:
+    def __init__(self, data: list[Any], status: GL840Configuration, directory: str = "GL840", document: str = "GL840", section: str = "GL840") -> None:
         """
         Data structure for GL840.
 
@@ -193,14 +194,13 @@ class GL840Data(MongoDBData):
         if len(data) != len(status.channel_name):
             raise ValueError(
                 f"Length of data ({len(data)}) does not match channel number ({len(status.channel_name)}).")
-        self.data: list[float] = data
+        self.data: list[Any] = data
         self.time: datetime = datetime.now()
         self.dict: dict[str, Union[float, None, str, list[Any]]] = {
             "Time": str(self.time), }
-
         for i in range(len(status.channel_name)):
             self.dict[f"{status.channel_name[i]}"] = self.data[i]
-        self.section = MongoDBSection("GL840", self.dict)
+        self.section = MongoDBSection(section, self.dict)
         super().__init__(directory, document, [
             self.section, ])
 
@@ -220,7 +220,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]*?)</b>", csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
         """
         Acquire the data of GL840
 
@@ -247,6 +247,7 @@ class DataAcquisition():
         self.func: list[Callable] = [
             lambda x: x for i in range(self.config.channels)]
         self.mongo_client = mongo
+        self.replace_pat = replace_pat_list
 
     def initialize_multi(self, timeout: int = 5) -> int:
         """
@@ -290,27 +291,34 @@ class DataAcquisition():
             raise NotInitializedMultiException
 
         if self.config.username is not None and self.config.password is not None:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0",
+                                     auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
         else:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
+            site_data = requests.get(
+                f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
-        temp = re.findall(self.pattern, site_data.text)
-        if len(temp) != self.config.channels:
+        text = site_data.text
+        for _pat in self.replace_pat.keys():
+            text = text.replace(_pat, self.replace_pat[_pat])
+        data_list: list[Any] = re.findall(self.pattern, text)
+        # print(site_data.text)
+        # print(data_list)
+        if len(data_list) != self.config.channels:
             raise ValueError(
-                f"The length of input data ({len(temp)}) does not match Channel number ({self.config.channels}).")
+                f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
         for i in range(self.config.channels - 1, -1, -1):
             if not self.config.channel_status[i]:
-                del temp[i]
+                data_list[i] = "Disabled"
                 continue
-            elif ("Off" in temp[i]):
-                temp[i] = None
+            elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i]):
                 continue
             else:
-                temp[i] = self.func[i](
-                    float(temp[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = self.func[i](
+                    float(data_list[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = str(data_list[i])
                 continue
-        self.data = GL840Data(temp, self.config)
+        self.data = GL840Data(data_list, self.config)
         if self.__initialized:
             if self.__is_single:
                 self.writer.write([[self.data.time, *self.data.data], ])
@@ -319,7 +327,7 @@ class DataAcquisition():
 
         if self.mongo_client is not None:
             self.mongo_client.push(self.data)
-        del temp
+        del data_list
         time.sleep(waitfor)
 
     def finalize_multi(self) -> None:
