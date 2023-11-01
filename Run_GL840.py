@@ -16,8 +16,8 @@ def run():
     config.channel_status = [True for i in range(20)]
     config.channel_name = channel_name
     daq = Daq.DataAcquisition(
-        config, csv_file_base="test.csv", mongo=mongo, override=True, num_event_per_file=100)
-    daq.set_function(0, Converter.Unity)
+        config, csv_file_base="test", mongo=mongo, override=True, num_event_per_file=100)
+    # daq.set_function(0, Converter.Unity)
     daq.initialize_single()
     while 1:
         try:

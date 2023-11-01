@@ -329,8 +329,7 @@ class DataAcquisition():
             elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i]):
                 continue
             else:
-                data_list[i] = self.func[i](
-                    float(data_list[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
                 data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)

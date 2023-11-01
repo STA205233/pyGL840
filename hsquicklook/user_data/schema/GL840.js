@@ -8,26 +8,28 @@ HSQuickLook.main.schema =
       "section": "GL840",
       "tableName": "GL840",
       "contents": {
-        "Temperature_1": { "source": "Temperature_1", "conversion": convert_string, "type": "string" },
-        "Ch2": { "type": "string", "conversion": convert_string, "format": "%.6f &#8451;" },
-        "Ch3": { "type": "string", "conversion": conversion_MPT200AR, "format": "%.3f Pa" },
-        "Ch4": { "type": "string", "conversion": convert_string },
-        "Ch5": { "type": "string", "conversion": convert_string },
-        "Ch6": { "type": "string", "conversion": convert_string },
-        "Ch7": { "type": "string", "conversion": convert_string },
-        "Ch8": { "type": "string", "conversion": convert_string },
-        "Ch9": { "type": "string", "conversion": convert_string },
-        "Ch10": { "type": "string", "conversion": convert_string },
-        "Ch11": { "type": "string", "conversion": convert_string },
-        "Ch12": { "type": "string", "conversion": convert_string },
-        "Ch13": { "type": "string", "conversion": convert_string },
-        "Ch14": { "type": "string", "conversion": convert_string },
-        "Ch15": { "type": "string", "conversion": convert_string },
-        "Ch16": { "type": "string", "conversion": convert_string },
-        "Ch17": { "type": "string", "conversion": convert_string },
-        "Ch18": { "type": "string", "conversion": convert_string },
-        "Ch19": { "type": "string", "conversion": convert_string },
-        "Ch20": { "type": "string", "conversion": convert_string },
+        "Temperature_1": {
+          "source": "Temperature_1", "conversion": convert_string, "type": "string", "format": "%-5.3e &#8451;"
+},
+        "Ch2": { "type": "string", "conversion": convert_string, "format": "%.3f &#8451;" },
+        "Ch3": { "type": "string", "conversion": conversion_MPT200AR, "format": "%.3f hPa" },
+        "Ch4": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch5": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch6": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch7": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch8": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch9": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch10": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch11": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch12": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch13": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch14": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch15": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch16": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch17": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch18": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch19": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Ch20": { "type": "string", "conversion": convert_string, "format": "%.3f V" },
       }
     },
     {
@@ -38,32 +40,32 @@ HSQuickLook.main.schema =
       "section": "GL840",
       "tableName": "GL840Status",
       "contents": {
-        "Temperature_1": { "source": "Temperature_1", "conversion": show_status, "type": "string", "status": status_func },
-        "Temperature_2": { "source": "Ch2", "type": "string", "conversion": show_status, "status": status_func },
-        "Ch3": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch4": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch5": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch6": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch7": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch8": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch9": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch10": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch11": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch12": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch13": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch14": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch15": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch16": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch17": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch18": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch19": { "type": "string", "conversion": show_status, "status": status_func },
-        "Ch20": { "type": "string", "conversion": show_status, "status": status_func },
+        "Temperature_1": { "source": "Temperature_1", "conversion": show_status, "type": "string", "status": status_color },
+        "Temperature_2": { "source": "Ch2", "type": "string", "conversion": show_status, "status": status_color },
+        "Ch3": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch4": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch5": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch6": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch7": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch8": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch9": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch10": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch11": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch12": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch13": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch14": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch15": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch16": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch17": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch18": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch19": { "type": "string", "conversion": show_status, "status": status_color },
+        "Ch20": { "type": "string", "conversion": show_status, "status": status_color },
       }
     },
   ];
 
 function check_invalid_value(v) {
-  if (v == "BURNOUT" || v == "+++++++") {
+  if (v == "BURNOUT" || v == "+++++++" || v == "Off" || v == "Disabled") {
     return false
   }
   return true
@@ -85,7 +87,10 @@ function show_status(v) {
   }
 }
 
-function status_func(v) {
+function status_color(v) {
+  if (v == "Off") {
+    return ""
+  }
   if (check_invalid_value(v)) {
     return "safe"
   }
@@ -99,5 +104,5 @@ function conversion_MPT200AR(v) {
     value = Number(v)
     return 10 ** (1.667 * value - 11.33)
   }
-  return v
+  return NaN
 }
