@@ -220,7 +220,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]*?|[BURNOT]*?|[\*]*?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
         """
         Acquire the data of GL840
 
@@ -304,7 +304,6 @@ class DataAcquisition():
         data_list: list[Any] = re.findall(self.pattern, text)
         # print(site_data.text)
         # print(data_list)
-        # print(temp)
         if len(data_list) != self.config.channels:
             raise ValueError(
                 f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
@@ -312,7 +311,7 @@ class DataAcquisition():
             if not self.config.channel_status[i]:
                 data_list[i] = "Disabled"
                 continue
-            elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "******" in data_list[i]):
+            elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i]):
                 continue
             else:
                 data_list[i] = self.func[i](

@@ -10,9 +10,9 @@ def run():
     channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
-        "localhost", 6765, username="GL840", password="GL840")
-    config.channel_status = [True, False, True] + [False for i in range(17)]
-    # config.channel_status = [True for i in range(20)]
+        "192.168.0.1", 80, username="GL840", password="GL840")
+    # config.channel_status = [True, False, True] + [False for i in range(17)]
+    config.channel_status = [True for i in range(20)]
     config.channel_name = channel_name
     daq = Daq.DataAcquisition(
         config, csv_file="test.csv", mongo=mongo, override=True)
