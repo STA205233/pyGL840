@@ -150,8 +150,7 @@ class GL840Configuration():
             raise ValueError(
                 f"The length of input array ({len(value)}) is invalid. It must be the same as The number of channels ({self.channels}). Note that each channel name must be different")
         self.__channel_name = value
-        print(
-            f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
+        print(f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
 
 
 class NotInitializedMultiException(Exception):
@@ -220,7 +219,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
         """
         Acquire the data of GL840
 
@@ -235,7 +234,7 @@ class DataAcquisition():
             The size of query between Writer process and DAQ process. If more data than this value is unwritten, incoming data will vanish.
 
         """
-        self.csv_file = csv_file
+        self.csv_file_base = csv_file_base
         self.write_interval = write_interval
         self.maxsize = maxsize_query
         self.strip_word = strip_word
@@ -248,6 +247,22 @@ class DataAcquisition():
             lambda x: x for i in range(self.config.channels)]
         self.mongo_client = mongo
         self.replace_pat = replace_pat_list
+        self.num_event_per_file = num_event_per_file
+        self.event_index = 0
+        self.file_index = 0
+        self.timeout_multi = 0
+        if self.csv_file_base is None:
+            self.__csv_file = ""
+        else:
+            self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
+
+    def set_function(self, index: int, func: Callable) -> None:
+        if index > self.config.channels:
+            print(f"Index({index}) is larger than the number of channels({self.config.channels})")
+            return
+        elif index < 0:
+            print(f"Index({index}) is smaller than 0")
+        self.func[index] = func
 
     def initialize_multi(self, timeout: int = 5) -> int:
         """
@@ -261,11 +276,15 @@ class DataAcquisition():
         """
         if self.__initialized:
             return 0
-        if self.csv_file is None:
+        if self.csv_file_base is None:
             self.__initialized = True
             return 0
+        if self.num_event_per_file is None:
+            print("num_event_per_file is unsupported in multi thread mode")
+            return -1
+        self.timeout_multi = timeout
         self.query: Queue = Queue(maxsize=self.maxsize)
-        self.writer = Writer(csv_file=self.csv_file,
+        self.writer = Writer(csv_file=self.__csv_file,
                              buffer_num=self.write_interval, queue=self.query)
         self.process = Process(
             group=None, target=self.writer.get, args=(timeout,),)
@@ -275,11 +294,11 @@ class DataAcquisition():
         return 1
 
     def initialize_single(self) -> int:
-        if self.csv_file is None:
+        if self.csv_file_base is None:
             self.__initialized = True
             self.__is_single = True
             return 0
-        self.writer = Writer(csv_file=self.csv_file,
+        self.writer = Writer(csv_file=self.__csv_file,
                              buffer_num=self.write_interval, override=self.__override)
         self.writer.write([["Time", *self.config.channel_name], ])
         self.__is_single = True
@@ -287,23 +306,19 @@ class DataAcquisition():
         return 1
 
     def data_acquire(self, waitfor: int = 0, timeout: int = 5) -> None:
-        if not self.__initialized and self.csv_file is not None:
+        if not self.__initialized and self.csv_file_base is not None:
             raise NotInitializedMultiException
-
+        self.__update_file()
         if self.config.username is not None and self.config.password is not None:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0",
-                                     auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
         else:
-            site_data = requests.get(
-                f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         text = site_data.text
         for _pat in self.replace_pat.keys():
             text = text.replace(_pat, self.replace_pat[_pat])
         data_list: list[Any] = re.findall(self.pattern, text)
-        # print(site_data.text)
-        # print(data_list)
         if len(data_list) != self.config.channels:
             raise ValueError(
                 f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
@@ -314,8 +329,7 @@ class DataAcquisition():
             elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i]):
                 continue
             else:
-                data_list[i] = self.func[i](
-                    float(data_list[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
                 data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)
@@ -330,18 +344,36 @@ class DataAcquisition():
         del data_list
         time.sleep(waitfor)
 
-    def finalize_multi(self) -> None:
+    def finalize_multi(self, show_end) -> None:
         if self.__initialized is False:
             return
         self.process.join()
         self.__initialized = False
-        print("Data Acquisition End!")
+        if show_end:
+            print("Data Acquisition End!")
 
-    def finalize_single(self) -> None:
+    def finalize_single(self, show_end: bool) -> None:
         if self.__initialized is False:
             return
         self.__initialized = False
-        print("Data Acquisition End!")
+        if show_end:
+            print("Data Acquisition End!")
+
+    def __update_file(self) -> None:
+        if (self.num_event_per_file is None) or (self.csv_file_base is None):
+            return
+        if self.event_index >= self.num_event_per_file:
+            self.file_index += 1
+            self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
+            if self.__is_single:
+                self.finalize_single(False)
+                self.initialize_single()
+            else:
+                self.finalize_multi(False)
+                self.initialize_multi(self.timeout_multi)
+            self.event_index = 1
+        else:
+            self.event_index += 1
 
 
 class Writer():
@@ -395,13 +427,13 @@ class Writer():
 
 if __name__ == "__main__":
     status = GL840Configuration(ip="localhost", port=8765)
-    daq = DataAcquisition(status, csv_file="test.csv", mongo=None,)
+    daq = DataAcquisition(status, csv_file_base="test", mongo=None,)
     daq.initialize_multi()
     while 1:
         try:
             daq.data_acquire(1)
             print(daq.data.data)
         except KeyboardInterrupt:
-            daq.finalize_multi()
+            daq.finalize_multi(True)
             break
-    daq.finalize_multi()
+    daq.finalize_multi(True)
