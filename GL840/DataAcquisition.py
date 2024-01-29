@@ -84,7 +84,7 @@ class GL840Configuration():
         The name of each channel. Default is "Ch i", where i is channel ID.
     """
 
-    def __init__(self, ip: str = "192.168.0.1", port: int = 80, username: Optional[str] = None, password: Optional[str] = None, channels: int = 20, channel_group: int = 0) -> None:
+    def __init__(self, ip: str = "192.168.0.1", port: int = 80, username: Optional[str] = None, password: Optional[str] = None, channels: int = 20) -> None:
         """
         Manage the GL840 status.
 
@@ -114,7 +114,6 @@ class GL840Configuration():
         self.channels = channels
         self.__channel_status: list[bool] = [True for i in range(channels)]
         self.__channel_name: list[str] = [f"Ch{i+1}" for i in range(channels)]
-        self.channel_group = channel_group
 
     @property
     def password(self) -> Optional[str]:
@@ -192,7 +191,7 @@ class GL840Data(MongoDBData):
         """
 
         if len(data) != len(status.channel_name):
-            raise ChannelNotMatchError(
+            raise ValueError(
                 f"Length of data ({len(data)}) does not match channel number ({len(status.channel_name)}).")
         self.data: list[Any] = data
         self.time: datetime = datetime.now()
@@ -220,7 +219,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
         """
         Acquire the data of GL840
 
@@ -311,9 +310,9 @@ class DataAcquisition():
             raise NotInitializedMultiException
         self.__update_file()
         if self.config.username is not None and self.config.password is not None:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp={self.config.channel_group}", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
         else:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp={self.config.channel_group}", timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         text = site_data.text
@@ -331,6 +330,7 @@ class DataAcquisition():
                 continue
             else:
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)
         if self.__initialized:
@@ -344,7 +344,7 @@ class DataAcquisition():
         del data_list
         time.sleep(waitfor)
 
-    def finalize_multi(self, show_end: bool) -> None:
+    def finalize_multi(self, show_end) -> None:
         if self.__initialized is False:
             return
         self.process.join()
@@ -425,11 +425,6 @@ class Writer():
         fp.close()
 
 
-class ChannelNotMatchError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
-
 if __name__ == "__main__":
     status = GL840Configuration(ip="localhost", port=8765)
     daq = DataAcquisition(status, csv_file_base="test", mongo=None,)
@@ -441,8 +436,4 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             daq.finalize_multi(True)
             break
-        except ChannelNotMatchError as ex:
-            print(str(ex))
-            continue
-
     daq.finalize_multi(True)
