@@ -202,6 +202,8 @@ class GL840Data(MongoDBData):
         self.section = MongoDBSection(section, self.dict)
         super().__init__(directory, document, [
             self.section, ])
+        print(data)
+        print(type(data))
 
 
 class DataAcquisition():
@@ -219,7 +221,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
         """
         Acquire the data of GL840
 
@@ -330,6 +332,7 @@ class DataAcquisition():
                 continue
             else:
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
+                data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)
         if self.__initialized:
@@ -435,8 +438,4 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             daq.finalize_multi(True)
             break
-        except ValueError as ex:
-            print(str(ex))
-            continue
-
     daq.finalize_multi(True)

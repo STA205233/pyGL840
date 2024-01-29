@@ -1,11 +1,15 @@
 {
-  "ws_host": "localhost",
+  "ws_host": "192.168.10.15",
   "ws_port": "8080",
   "title": "HSQuickLook",
   "ti_scaling": 64,
   "schema_list": {
-    "GL840": {
-      "GL840": "user_data/schema/GL840.js"
-    }
-  }
+    "QuickLook": {
+      "Short_Term_Trend": "user_data/schema/Short_Term_Trend.js",
+      "Long_Term_Trend": "user_data/schema/Long_Term_Trend.js",
+      "with_MPT200":"user_data/schema/with_MPT200.js",
+      "temp":"user_data/schema/temp.js"
+
+    } 
+  } 
 }

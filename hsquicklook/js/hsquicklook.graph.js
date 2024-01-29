@@ -31,12 +31,12 @@ var HSQuickLook = HSQuickLook || {};
     this.data = {
       label: "data1",
       color: "black",
-      points: { show: true, radius: 1, fillColor: "black" },
+      points: { show: true, radius: 0.5, fillColor: "black" },
       data: []
     };
 
     this.options = {
-      legend: { show: true, position: "nw" },
+      legend: { show: true, position: "n" },
       series: { lines: { show: true, lineWidth: 1 }},
       xaxis: { min: -1.0, max: +1.0 },
       yaxis: { min: -1.0, max: +1.0 }
