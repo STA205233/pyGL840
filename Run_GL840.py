@@ -9,13 +9,8 @@ import os
 
 def run():
     # The length of channel name must be the number of enabled channels
-<<<<<<< HEAD
-    channel_name = [f"Ch{i+1}" for i in range(20)]
-    # channel_name[0] = "Temperature_1"
-=======
     channel_name = [f"Ch{i+1}" for i in range(28)]
     channel_name[0] = "Temperature_1"
->>>>>>> master
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
         "192.168.1.11", 80, username="GL840", password="GL840")

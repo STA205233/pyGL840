@@ -131,11 +131,7 @@ class GL840Configuration():
     @channel_status.setter
     def channel_status(self, value: list[bool]) -> None:
         if len(value) != self.channels:
-<<<<<<< HEAD
-            raise ValueError(
-=======
             raise ChannelNotMatchError(
->>>>>>> master
                 f"The length of channel status ({len(value)}) does not match the number of channels ({self.channels})")
         self.__channel_status = value
         for i in range(len(value) - 1, -1, -1):
@@ -151,11 +147,7 @@ class GL840Configuration():
     @channel_name.setter
     def channel_name(self, value: list[str]) -> None:
         if len(value) != len(set(value)):
-<<<<<<< HEAD
-            raise ValueError(
-=======
             raise ChannelNotMatchError(
->>>>>>> master
                 f"The length of input array ({len(value)}) is invalid. It must be the same as The number of channels ({self.channels}). Note that each channel name must be different")
         self.__channel_name = value
         print(f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
@@ -199,11 +191,7 @@ class GL840Data(MongoDBData):
         """
 
         if len(data) != len(status.channel_name):
-<<<<<<< HEAD
-            raise ValueError(
-=======
             raise ChannelNotMatchError(
->>>>>>> master
                 f"Length of data ({len(data)}) does not match channel number ({len(status.channel_name)}).")
         self.data: list[Any] = data
         self.time: datetime = datetime.now()
@@ -231,11 +219,7 @@ class DataAcquisition():
 
     """
 
-<<<<<<< HEAD
     def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
-=======
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
->>>>>>> master
         """
         Acquire the data of GL840
 
@@ -326,15 +310,9 @@ class DataAcquisition():
             raise NotInitializedMultiException
         self.__update_file()
         if self.config.username is not None and self.config.password is not None:
-<<<<<<< HEAD
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
-        else:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
-=======
             site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
         else:
             site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", timeout=timeout)
->>>>>>> master
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         text = site_data.text
@@ -342,11 +320,7 @@ class DataAcquisition():
             text = text.replace(_pat, self.replace_pat[_pat])
         data_list: list[Any] = re.findall(self.pattern, text)
         if len(data_list) != self.config.channels:
-<<<<<<< HEAD
-            raise ValueError(
-=======
             raise ChannelNotMatchError(
->>>>>>> master
                 f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
         for i in range(self.config.channels - 1, -1, -1):
             if not self.config.channel_status[i]:
@@ -356,10 +330,6 @@ class DataAcquisition():
                 continue
             else:
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
-<<<<<<< HEAD
-=======
-                data_list[i] = str(data_list[i])
->>>>>>> master
                 continue
         self.data = GL840Data(data_list, self.config)
         if self.__initialized:
@@ -405,14 +375,11 @@ class DataAcquisition():
             self.event_index += 1
 
 
-<<<<<<< HEAD
-=======
 class ChannelNotMatchError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
->>>>>>> master
 class Writer():
     def __init__(self, csv_file: str, buffer_num: int, queue: Optional[Queue] = None, override: bool = False) -> None:
 
@@ -473,11 +440,8 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             daq.finalize_multi(True)
             break
-<<<<<<< HEAD
-        except ValueError as ex:
+        except ChannelNotMatchError as ex:
             print(str(ex))
             continue
 
-=======
->>>>>>> master
     daq.finalize_multi(True)
