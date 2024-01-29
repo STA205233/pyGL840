@@ -7,7 +7,7 @@ import GL840.Converter as Converter
 
 def run():
     # The length of channel name must be the number of enabled channels
-    channel_name = [f"Ch{i+1}" for i in range(20)]
+    channel_name = [f"Ch{i+1}" for i in range(28)]
     channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(

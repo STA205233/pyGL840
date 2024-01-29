@@ -131,7 +131,7 @@ class GL840Configuration():
     @channel_status.setter
     def channel_status(self, value: list[bool]) -> None:
         if len(value) != self.channels:
-            raise ValueError(
+            raise ChannelNotMatchError(
                 f"The length of channel status ({len(value)}) does not match the number of channels ({self.channels})")
         self.__channel_status = value
         for i in range(len(value) - 1, -1, -1):
@@ -147,7 +147,7 @@ class GL840Configuration():
     @channel_name.setter
     def channel_name(self, value: list[str]) -> None:
         if len(value) != len(set(value)):
-            raise ValueError(
+            raise ChannelNotMatchError(
                 f"The length of input array ({len(value)}) is invalid. It must be the same as The number of channels ({self.channels}). Note that each channel name must be different")
         self.__channel_name = value
         print(f"Channel Status Updated!\n Channel Status: {self.__channel_status}\n Channel name: {self.__channel_name}")
@@ -191,7 +191,7 @@ class GL840Data(MongoDBData):
         """
 
         if len(data) != len(status.channel_name):
-            raise ValueError(
+            raise ChannelNotMatchError(
                 f"Length of data ({len(data)}) does not match channel number ({len(status.channel_name)}).")
         self.data: list[Any] = data
         self.time: datetime = datetime.now()
@@ -310,9 +310,9 @@ class DataAcquisition():
             raise NotInitializedMultiException
         self.__update_file()
         if self.config.username is not None and self.config.password is not None:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
         else:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=0", timeout=timeout)
+            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", timeout=timeout)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         text = site_data.text
@@ -320,7 +320,7 @@ class DataAcquisition():
             text = text.replace(_pat, self.replace_pat[_pat])
         data_list: list[Any] = re.findall(self.pattern, text)
         if len(data_list) != self.config.channels:
-            raise ValueError(
+            raise ChannelNotMatchError(
                 f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
         for i in range(self.config.channels - 1, -1, -1):
             if not self.config.channel_status[i]:
@@ -374,6 +374,11 @@ class DataAcquisition():
             self.event_index = 1
         else:
             self.event_index += 1
+
+
+class ChannelNotMatchError(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
 
 
 class Writer():
