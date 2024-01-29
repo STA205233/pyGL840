@@ -1,3 +1,6 @@
+var roomtempareture=0.0;
+var dewpoint=0.0;
+
 
 HSQuickLook.main.schema =
   [
@@ -14,9 +17,10 @@ HSQuickLook.main.schema =
         "Inner_Pressure": { "source": "Ch3",  "type": "float", "format": "%.3f Bar", "status": function (v) {return status_func("Ch3",v); }},
         "LAr_Level":         { "source": "Ch4",  "type": "float", "format": "%.2f cm", "status": function (v) {return status_func("Ch4",v); }},
         "Oxygen":                 { "source": "Ch5", "conversion": conversion_OX600, "type": "float", "format": "%-5.1f &#037;", "status": function (v) {return status_func("Ch5",v); }},
-        // "Ch6": { "source": "Ch6","type": "string", "conversion": convert_string, "format": "%.3f V" },
-        // "Ch7": { "source": "Ch7","type": "string", "conversion": convert_string, "format": "%.3f V" },
-        // "Ch8": { "source": "Ch8", "type": "string", "conversion": convert_string, "format": "%.3f V" },
+        "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,"conversion": function(v){roomtempareture=v; return v;}},
+        "Humidity": { "source": "Ch22","type": "float", "format": "%.3f ％" },
+        "Dew_Point": { "source": "Ch23", "type": "float", "format": "%.3f &#8451" ,"conversion": function(v){dewpoint=v; return v;}},
+        "tempareture_warning":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return roomtempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",roomtempareture-dewpoint)}}
         // "Ch9": { "source": "Ch9","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Ch10": { "source": "Ch10","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Bottom_temp": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func("Ch11",v); } },
@@ -148,29 +152,31 @@ HSQuickLook.main.schema =
   ];
 
 
+
+
   function conversion_MPT200AR(v) {
-    return 10 ** (1.667 * v - 9.333)
+    return 10 ** (1.667 * v - 9.333);
 }
 
 function conversion_PKR251(v) {
-    return 10 ** (1.667 * v - 9.333)
+    return 10 ** (1.667 * v - 9.333);
 }
 
 function conversion_APR262(v) {
-     return 20000*(v-1.0)/0.8
+     return 20000*(v-1.0)/0.8;
 }
 
 function conversion_OX600(v) {
-    R = 151.6
-    I = 1000.0 * v / R
-    return 25.0 * (I - 4.0) / (20.0 - 4.0)
+    R = 151.6;
+    I = 1000.0 * v / R;
+    return 25.0 * (I - 4.0) / (20.0 - 4.0);
 }
 
 function conversion_PKR251_log(v) {
-  return 1.667 * v - 9.333
+  return 1.667 * v - 9.333;
 }
   function conversion_MPT200AR_log(v) {
-    return  1.667 * v - 9.333
+    return  1.667 * v - 9.333;
 }
 
 var status_configuration = {
@@ -185,22 +191,23 @@ var status_configuration = {
   "Ch14": {"LAr_temp": [-189, -185]},
   "Ch15": {"LAr_temp": [-189, -185]},
   "Ch16": {"LAr_temp": [10, 25]},
-}
+  "tempareture_warning":{"safe_range":[10,50],"warning_range": [5,10]}
+};
 
 function status_func(name,v) {
   if ((status_configuration[name]["safe_range"][0] <=v)&&(status_configuration[name]["safe_range"][1] >=v)){
-    return "safe"
+    return "safe";
   }
   else if ((status_configuration[name]["warning_range"][0] <=v)&&(status_configuration[name]["warning_range"][1] >=v)){
-    return "warning"
+    return "warning";
   }
   else {
-    return "error"
+    return "error";
   }
 }
 
 function status_func_temp(name,v){
   if ((status_configuration[name]["LAr_temp"][0] <=v)&&(status_configuration[name]["LAr_temp"][1] >=v)){
-    return "temp"
+    return "temp";
   }
 }
