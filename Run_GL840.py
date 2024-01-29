@@ -30,7 +30,7 @@ def run():
     
 
     daq = Daq.DataAcquisition(
-        config, csv_file_base=f"/Users/grams/Software/QL/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, override=True, num_event_per_file=10000)
+        config, csv_file_base=f"/Users/grams/Software/QL/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, override=False, num_event_per_file=10000)
     # daq.set_function(0, Converter.Unity)
     daq.initialize_single()
     while 1:
