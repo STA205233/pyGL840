@@ -1,4 +1,4 @@
-var roomtempareture=0.0;
+var Bottom_tempareture=0.0;
 var dewpoint=0.0;
 
 
@@ -17,10 +17,10 @@ HSQuickLook.main.schema =
         "Inner_Pressure": { "source": "Ch3",  "type": "float", "format": "%.3f Bar", "status": function (v) {return status_func("Ch3",v); }},
         "LAr_Level":         { "source": "Ch4",  "type": "float", "format": "%.2f cm", "status": function (v) {return status_func("Ch4",v); }},
         "Oxygen":                 { "source": "Ch5", "conversion": conversion_OX600, "type": "float", "format": "%-5.1f &#037;", "status": function (v) {return status_func("Ch5",v); }},
-        "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,"conversion": function(v){roomtempareture=v; return v;}},
+        "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,"conversion": function(v){Bottom_tempareture=v; return v;}},
         "Humidity": { "source": "Ch22","type": "float", "format": "%.3f ％" },
         "Dew_Point": { "source": "Ch23", "type": "float", "format": "%.3f &#8451" ,"conversion": function(v){dewpoint=v; return v;}},
-        "tempareture_warning":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return roomtempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",roomtempareture-dewpoint)}}
+        "BottomT-DewPoint":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return Bottom_tempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",Bottom_tempareture-dewpoint)}}
         // "Ch9": { "source": "Ch9","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Ch10": { "source": "Ch10","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Bottom_temp": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func("Ch11",v); } },
@@ -44,12 +44,12 @@ HSQuickLook.main.schema =
       "section": "GL840",
       "tableName": "Tempareture",
       "contents": {
-        "RoomTemperature": { "source": "Ch16", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch16",v); } },
-        "Baffle": { "source": "Ch15", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch15",v); }},
-        "z16_5cm": { "source": "Ch14",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch14",v); }},
-        "z15_0cm": { "source": "Ch13",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch13",v); }},
-        "MPPC_window": { "source": "Ch12",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch12",v); }},
-        "Bottom": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch11",v); } },
+        "Top_Baffle": { "source": "Ch16", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch16",v); } },
+        "TPC_Baffle": { "source": "Ch15", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch15",v); }},
+        "Above_Anode": { "source": "Ch14",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch14",v); }},
+        "Below_Anode": { "source": "Ch13",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch13",v); }},
+        "SiPM": { "source": "Ch12",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch12",v); }},
+        "Bottom_Heater": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch11",v); } },
         // "MPPC_window": { "source": "Ch12",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch12",v); }},
         // "z15cm": { "source": "Ch13",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch13",v); }},
         // "z16_5cm": { "source": "Ch14",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch14",v); }},
@@ -74,57 +74,58 @@ HSQuickLook.main.schema =
         "group": [
             {"source": "Ch5","conversion":conversion_OX600,"options":{"legend": "Oxygen","color": "red" }}
         ],
-        "options":{"xWidth": 10000,"yRange":[0.0, 30],
+        "options":{"xWidth": 1000,"yRange":[0.0, 30],
         },
         },
           "Temperature": { "type": "trend-graph",
               "group": [
+                  {"source": "Ch21", "options":{"legend": "room_temp","color": "orange"}},
+                  {"source": "Ch16", "options":{"legend": "Top_Baffle","color": "cyan"}},
+                  {"source": "Ch15", "options":{"legend": "TPC_Baffle","color": "black"}},
+                  {"source": "Ch14", "options":{"legend": "Above_Anode","color": "brown"}},
+                  {"source": "Ch13", "options":{"legend": "Below_Anode","color": "green"}},
+                  {"source": "Ch12", "options":{"legend": "SiPM","color": "blue"}},
                   {"source": "Ch11", "options":{"legend": "Bottom","color": "red"}},
-                  {"source": "Ch12", "options":{"legend": "TPB","color": "blue"}},
-                  {"source": "Ch13", "options":{"legend": "+15cm","color": "green"}},
-                  {"source": "Ch14", "options":{"legend": "+16.5cm","color": "brown"}},
-                  {"source": "Ch15", "options":{"legend": "Baffle_Bottom","color": "black"}},
-                  {"source": "Ch16", "options":{"legend": "RoomTemperature","color": "cyan"}},
               ],
-        "options":{"xWidth": 10000,"yRange":[-200, 30]}
+        "options":{"xWidth": 1000,"yRange":[-200, 30]}
         },
           "LAr_Level": { "type": "trend-graph",
           "group": [
               {"source": "Ch4","options":{"legend": "level","color": "red"}},
             ],
-        "options":{"xWidth": 10000,"yRange":[-1, 70]}
+        "options":{"xWidth": 1000,"yRange":[-1, 70]}
         },
         }    
     },
-    {
-      "collection": "GL840",
-      "directory": "GL840",
-      "document": "GL840",
-      "period": 60,
-      "tableName": "Presssure_log",
-      "section": "GL840",
-      "contents": {
-          "Outer_log": { "type": "trend-graph",
-              "group": [
-                  {"source": "Ch1","conversion":conversion_PKR251_log, "options":{"legend": "Outer_PKR","color": "red"}},
-              ],
-              "options":{"xWidth": 10000,"yRange":[-4, 5]}
-          },
+    // {
+    //   "collection": "GL840",
+    //   "directory": "GL840",
+    //   "document": "GL840",
+    //   "period": 60,
+    //   "tableName": "Presssure_log",
+    //   "section": "GL840",
+    //   "contents": {
+    //       "Outer_log": { "type": "trend-graph",
+    //           "group": [
+    //               {"source": "Ch1","conversion":conversion_PKR251_log, "options":{"legend": "Outer_PKR","color": "red"}},
+    //           ],
+    //           "options":{"xWidth": 1000,"yRange":[-4, 5]}
+    //       },
           // "Inner_log": { "type": "trend-graph",
           //     "group": [
           //         {"source": "Ch2", "conversion":conversion_MPT200AR_log, "options":{"legend": "Inner_MPT","color": "blue"}},
           //     ],
           //     "options":{"xWidth": 1000,"yRange":[-4, 5]}
           // },
-      }
+    //   }
         
-    },
+    // },
     {
       "collection": "GL840",
       "directory": "GL840",
       "document": "GL840",
       "period": 60,
-      "tableName": "Presssure_linear",
+      "tableName": "Presssure",
       "section": "GL840",
       "contents": {
           "Outer_Pa": { "type": "trend-graph",
@@ -191,7 +192,7 @@ var status_configuration = {
   "Ch14": {"LAr_temp": [-189, -185]},
   "Ch15": {"LAr_temp": [-189, -185]},
   "Ch16": {"LAr_temp": [10, 25]},
-  "tempareture_warning":{"safe_range":[10,50],"warning_range": [5,10]}
+  "tempareture_warning":{"safe_range":[5,50],"warning_range": [0,5]}
 };
 
 function status_func(name,v) {
