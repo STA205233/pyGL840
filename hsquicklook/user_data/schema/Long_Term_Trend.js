@@ -17,7 +17,7 @@ HSQuickLook.main.schema =
         "Inner_Pressure": { "source": "Ch3",  "type": "float", "format": "%.3f Bar", "status": function (v) {return status_func("Ch3",v); }},
         "LAr_Level":         { "source": "Ch4",  "type": "float", "format": "%.2f cm", "status": function (v) {return status_func("Ch4",v); }},
         "Oxygen":                 { "source": "Ch5", "conversion": conversion_OX600, "type": "float", "format": "%-5.1f &#037;", "status": function (v) {return status_func("Ch5",v); }},
-        "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,"conversion": function(v){Bottom_tempareture=v; return v;}},
+        "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,},
         "Humidity": { "source": "Ch22","type": "float", "format": "%.3f ％" },
         "Dew_Point": { "source": "Ch23", "type": "float", "format": "%.3f &#8451" ,"conversion": function(v){dewpoint=v; return v;}},
         "BottomT-DewPoint":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return Bottom_tempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",Bottom_tempareture-dewpoint)}}
@@ -49,7 +49,7 @@ HSQuickLook.main.schema =
         "Above_Anode": { "source": "Ch14",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch14",v); }},
         "Below_Anode": { "source": "Ch13",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch13",v); }},
         "SiPM": { "source": "Ch12",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch12",v); }},
-        "Bottom_Heater": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch11",v); } },
+        "Bottom_Heater": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {Bottom_tempareture=v;return status_func_temp("Ch11",v); } },
         // "MPPC_window": { "source": "Ch12",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch12",v); }},
         // "z15cm": { "source": "Ch13",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch13",v); }},
         // "z16_5cm": { "source": "Ch14",  "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func_temp("Ch14",v); }},
@@ -74,7 +74,7 @@ HSQuickLook.main.schema =
         "group": [
             {"source": "Ch5","conversion":conversion_OX600,"options":{"legend": "Oxygen","color": "red" }}
         ],
-        "options":{"xWidth": 1000,"yRange":[0.0, 30],
+        "options":{"xWidth": 10000,"yRange":[0.0, 30],
         },
         },
           "Temperature": { "type": "trend-graph",
@@ -87,13 +87,13 @@ HSQuickLook.main.schema =
                   {"source": "Ch12", "options":{"legend": "SiPM","color": "blue"}},
                   {"source": "Ch11", "options":{"legend": "Bottom","color": "red"}},
               ],
-        "options":{"xWidth": 1000,"yRange":[-200, 30]}
+        "options":{"xWidth": 10000,"yRange":[-200, 30]}
         },
           "LAr_Level": { "type": "trend-graph",
           "group": [
               {"source": "Ch4","options":{"legend": "level","color": "red"}},
             ],
-        "options":{"xWidth": 1000,"yRange":[-1, 70]}
+        "options":{"xWidth": 10000,"yRange":[-1, 70]}
         },
         }    
     },
