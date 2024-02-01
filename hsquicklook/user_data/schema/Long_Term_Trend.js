@@ -50,7 +50,7 @@ HSQuickLook.main.schema =
         "Oxygen": {
           "type": "trend-graph",
           "group": [
-            { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "Oxygen", "color": "red" } }
+            { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "O2", "color": "red" } }
           ],
           "options": {
             "xWidth": 10000, "yRange": [0.0, 30],

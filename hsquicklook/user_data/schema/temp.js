@@ -71,7 +71,7 @@ HSQuickLook.main.schema =
         "Oxygen": {
           "type": "trend-graph",
           "group": [
-            { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "Oxygen", "color": "red" } }
+            { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "O2", "color": "red" } }
           ],
           "options": {
             "xWidth": 10000, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
@@ -110,14 +110,14 @@ HSQuickLook.main.schema =
         "Outer_Vacuum": {
           "type": "trend-graph",
           "group": [
-            { "source": "Ch1", "conversion": conversion_PKR251, "options": { "legend": "Outer_PKR", "color": "red" } },
+            { "source": "Ch1", "conversion": conversion_PKR251, "options": { "legend": "Outer", "color": "red" } },
           ],
           "options": { "xWidth": 10000, "yRange": [0, 0.05], "frame": { "height": 270, "width": 480 } }
         },
         "Inner_Vacuum": {
           "type": "trend-graph",
           "group": [
-            { "source": "Ch2", "conversion": conversion_MPT200AR, "options": { "legend": "Inner_MPT", "color": "blue" } },
+            { "source": "Ch2", "conversion": conversion_MPT200AR, "options": { "legend": "Inner", "color": "blue" } },
           ],
           "options": { "xWidth": 10000, "yRange": [0, 10.0], "frame": { "height": 270, "width": 480 } }
         },
