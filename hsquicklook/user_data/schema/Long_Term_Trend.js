@@ -20,7 +20,7 @@ HSQuickLook.main.schema =
         "Room_Tempareture": { "source": "Ch21","type": "float",  "format": "%.3f &#8451" ,},
         "Humidity": { "source": "Ch22","type": "float", "format": "%.3f ％" },
         "Dew_Point": { "source": "Ch23", "type": "float", "format": "%.3f &#8451" ,"conversion": function(v){dewpoint=v; return v;}},
-        "BottomT-DewPoint":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return Bottom_tempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",Bottom_tempareture-dewpoint)}}
+        // "BottomT-DewPoint":{"source": "Ch21","type":"float","format":"%.3f &#8451","conversion": function(v){return Bottom_tempareture-dewpoint;},"status": function (v){return status_func("tempareture_warning",Bottom_tempareture-dewpoint)}}
         // "Ch9": { "source": "Ch9","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Ch10": { "source": "Ch10","type": "string", "conversion": convert_string, "format": "%.3f V" },
         // "Bottom_temp": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) {return status_func("Ch11",v); } },
