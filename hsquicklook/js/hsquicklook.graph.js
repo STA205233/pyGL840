@@ -188,7 +188,7 @@ var HSQuickLook = HSQuickLook || {};
       showlegend: true,
       title: " ",
       legend: {
-        xanchor: "right",
+        xanchor: "left",
         yanchor: "top"
       },
       xaxis: {
