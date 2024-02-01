@@ -53,7 +53,7 @@ HSQuickLook.main.schema =
             { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "O2", "color": "red" } }
           ],
           "options": {
-            "xWidth": 10000, "yRange": [0.0, 30],
+            "xWidth": 10000, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
           },
         },
         "Temperature": {
