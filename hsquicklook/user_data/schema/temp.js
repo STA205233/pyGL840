@@ -112,11 +112,11 @@ HSQuickLook.main.schema =
         "Temperature": {
           "type": "trend-graph",
           "group": [
-            { "source": "Ch21", "options": { "legend": "room_temp", "color": "orange" } },
-            { "source": "Ch16", "options": { "legend": "Top_Baffle", "color": "cyan" } },
-            { "source": "Ch15", "options": { "legend": "TPC_Baffle", "color": "black" } },
-            { "source": "Ch14", "options": { "legend": "Above_Anode", "color": "brown" } },
-            { "source": "Ch13", "options": { "legend": "Below_Anode", "color": "green" } },
+            { "source": "Ch21", "options": { "legend": "room", "color": "orange" } },
+            { "source": "Ch16", "options": { "legend": "Baffle", "color": "cyan" } },
+            { "source": "Ch15", "options": { "legend": "TPCTop", "color": "black" } },
+            { "source": "Ch14", "options": { "legend": "FEC", "color": "brown" } },
+            { "source": "Ch13", "options": { "legend": "Anode", "color": "green" } },
             { "source": "Ch12", "options": { "legend": "SiPM", "color": "blue" } },
             { "source": "Ch11", "options": { "legend": "Bottom", "color": "red" } },
           ],
