@@ -181,11 +181,11 @@ function conversion_PKR251_log(v) {
 }
 
 var status_configuration = {
-  "Ch1": {"safe_range": [0,0.1 ], "warning_range": [0, 1.0]},
+  "Ch1": {"safe_range": [0,0.001 ], "warning_range": [0, 0.01]},
   "Ch2": {"safe_range": [0, 1e+6], "warning_range": [1, 50]},
-  "Ch3": {"safe_range": [0, 1.4], "warning_range": [0, 2.0]},
+  "Ch3": {"safe_range": [0, 1.3], "warning_range": [0, 2.0]},
   "Ch4": {"safe_range": [-1, 20], "warning_range": [-1,25]},
-  "Ch5": {"safe_range": [20.7,22], "warning_range": [20.6, 22]},
+  "Ch5": {"safe_range": [20.6,22], "warning_range": [20.3, 20.6]},
   "Ch11": {"LAr_temp": [-189, -185]}, 
   "Ch12": {"LAr_temp": [-189, -185]},
   "Ch13": {"LAr_temp": [-189, -185]},
