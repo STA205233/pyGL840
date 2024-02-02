@@ -74,7 +74,7 @@ HSQuickLook.main.schema =
             { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "O2", "color": "red" } }
           ],
           "options": {
-            "xWidth": 10000, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
+            "xWidth": 1000, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
           },
         },
         "Temperature": {
@@ -88,14 +88,24 @@ HSQuickLook.main.schema =
             { "source": "Ch12", "options": { "legend": "SiPM", "color": "blue" } },
             { "source": "Ch11", "options": { "legend": "Bottom", "color": "red" } },
           ],
-          "options": { "xWidth": 10000, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
+        },
+        "Temperature_refill": {
+          "type": "trend-graph",
+          "group": [
+            { "source": "Ch14", "options": { "legend": "FEC", "color": "brown" } },
+            { "source": "Ch13", "options": { "legend": "Anode", "color": "green" } },
+            { "source": "Ch12", "options": { "legend": "SiPM", "color": "blue" } },
+            { "source": "Ch11", "options": { "legend": "Bottom", "color": "red" } },
+          ],
+          "options": { "xWidth": 100, "yRange": [-195, -160], "frame": { "height": 270, "width": 480 } }
         },
         "LAr_Level": {
           "type": "trend-graph",
           "group": [
             { "source": "Ch4", "options": { "legend": "level", "color": "red" } },
           ],
-          "options": { "xWidth": 10000, "yRange": [-1, 70], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [-1, 70], "frame": { "height": 270, "width": 480 } }
         },
       }
     },
@@ -112,21 +122,21 @@ HSQuickLook.main.schema =
           "group": [
             { "source": "Ch1", "conversion": conversion_PKR251, "options": { "legend": "Outer", "color": "red" } },
           ],
-          "options": { "xWidth": 10000, "yRange": [0, 0.05], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [0, 0.05], "frame": { "height": 270, "width": 480 } }
         },
         "Inner_Vacuum": {
           "type": "trend-graph",
           "group": [
             { "source": "Ch2", "conversion": conversion_MPT200AR, "options": { "legend": "Inner", "color": "blue" } },
           ],
-          "options": { "xWidth": 10000, "yRange": [0, 10.0], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [0, 10.0], "frame": { "height": 270, "width": 480 } }
         },
         "Inner_Pressure": {
           "type": "trend-graph",
           "group": [
             { "source": "Ch3", "options": { "legend": "Inner_APR", "color": "green" } },
           ],
-          "options": { "xWidth": 10000, "yRange": [0.5, 3.0], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [0.5, 3.0], "frame": { "height": 270, "width": 480 } }
         }
       }
     },

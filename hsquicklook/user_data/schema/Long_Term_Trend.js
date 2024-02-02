@@ -145,7 +145,7 @@ var status_configuration = {
   "Ch13": { "LAr_temp": [-189, -185] },
   "Ch14": { "LAr_temp": [-189, -185] },
   "Ch15": { "LAr_temp": [-189, -185] },
-  "Ch16": { "LAr_temp": [10, 25] },
+  "Ch16": { "LAr_temp": [-189, -185] },
   "tempareture_warning": { "safe_range": [5, 50], "warning_range": [0, 5] }
 };
 

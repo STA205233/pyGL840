@@ -7,7 +7,8 @@
     "QuickLook": {
       "Short_Term_Trend": "user_data/schema/Short_Term_Trend.js",
       "Long_Term_Trend": "user_data/schema/Long_Term_Trend.js",
-      "Temperature": "user_data/schema/temp.js"
+      "Temperature": "user_data/schema/temp.js",
+      "Temperature_refill": "user_data/schema/temp2.js"
     }
   }
 }
