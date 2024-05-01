@@ -44,6 +44,9 @@ An example is shown below.
 ---------------------
 Author : Shota Arai
 Date : 2022/12/12
+---------------------
+
+2024/5/1 Shota Arai : Change type of data pushed to MongoDB
 
 """
 
@@ -330,7 +333,6 @@ class DataAcquisition():
                 continue
             else:
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
-                data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)
         if self.__initialized:
@@ -441,4 +443,8 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             daq.finalize_multi(True)
             break
+        except ChannelNotMatchError as ex:
+            print(str(ex))
+            continue
+
     daq.finalize_multi(True)
