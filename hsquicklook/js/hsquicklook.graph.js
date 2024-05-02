@@ -33,6 +33,7 @@ var HSQuickLook = HSQuickLook || {};
       editable: true,
       displaylogo: false,
       scrollZoom: true,
+      modeBarButtonsToRemove: ["lasso2d", "select2d","resetScale2d"]
     };
 
     this.layout = {
