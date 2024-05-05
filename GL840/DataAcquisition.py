@@ -1,5 +1,5 @@
 """
-data_acquisition
+DataAcquisition
 ====
 
 This is data acquisition tool for GL840.
@@ -7,9 +7,9 @@ This is data acquisition tool for GL840.
 How To Use
 --
 
-(1) Construct Data_Acquisition object.
+(1) Construct DataAcquisition object.
 
-    >>> daq = Data_Acquisition(csv_file="test.csv", mongo=True)
+    >>> daq = DataAcquisition(csv_file="test.csv", mongo=True)
 (2) If you use MongoDB or csv writer, call initialize_multi or initialize_single method of Data_Acquisition class.
 
     >>> daq.initialize_multi()

@@ -63,7 +63,6 @@ class ServerSimulator(BasicHandler):
     def __openFile(self) -> None:
         self.filename = self.directory + "/" + self.filename_base + str(self.__fileindex) + self.filename_extension
         self.fp = open(self.filename, "r")
-        
 
     def __closeFile(self) -> None:
         self.fp.close()
