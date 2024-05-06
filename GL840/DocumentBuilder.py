@@ -1,5 +1,5 @@
 from typing import Self
-from __init__ import SPECIAL_VALUE
+from GL840 import SPECIAL_VALUE
 DATA_PER_ROW = 3
 
 
