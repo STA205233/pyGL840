@@ -1,6 +1,5 @@
-from typing import Literal, Self
-
-SPECIAL_VALUE = Literal["+++++++", "Off"]
+from typing import Self
+from __init__ import SPECIAL_VALUE
 DATA_PER_ROW = 3
 
 
@@ -65,13 +64,19 @@ class DocumentBuilder:
         text += self.footer
         return text
 
-    def buildTableElement(self, channel_name: str, value: str | float, unit: str, col: str) -> str:
+    def buildTableElement(self, channel_name: str, value: float | str, unit: str, col: str) -> str:
         if type(value) is float:
             if value >= 0:
                 value = f"+ {value:.1f}"
             else:
                 value = f"- {value:.1f}"
         return f"<td><table height=90 width=155 border=1 cellpadding=0 cellspacing=0 bgcolor=white><tr><td><font size=4 color={col}><b>&nbsp;{channel_name}</b></font></td></tr><tr><td><font size=6 color={col}><b>&nbsp;{value}</b></font></td></tr><tr><td><font size=4 color={col}><b>&nbsp;{unit}</b></font></td></tr></table></td>"
+
+    def SetItems(self, value: list[float | SPECIAL_VALUE]) -> None:
+        if len(value) != len(self.value.name):
+            raise ValueError("The number of values does not match the number of channels.")
+        for i in range(len(value)):
+            self.value.SetItem(self.value.name[i], value[i], self.value.unit[i])
 
 
 builder = DocumentBuilder()

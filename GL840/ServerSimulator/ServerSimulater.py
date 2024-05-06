@@ -6,7 +6,9 @@ import base64
 from DocumentBuilder import DocumentBuilder
 from typing import Any
 import pathlib
-import time
+import datetime
+import random
+from DataReader import DataReaderBase
 
 
 class BasicHandler(BaseHTTPRequestHandler):
@@ -45,27 +47,41 @@ class BasicHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("User-Agent", "test1")
         self.end_headers()
-        html = self.builder.buildDocument()
-        self.wfile.write(html.encode())
+        self.wfile.write("Success".encode("utf-8"))
+
+
+class RandomDataGenerator(DataReaderBase):
+    def __init__(self, num_data: int, random_seed: int = 0) -> None:
+        self.random_gen = random.Random(random_seed)
+        self.num_data = num_data
+
+    def Read(self) -> list[str]:
+        ret = []
+        for i in range(self.num_data):
+            ret.append(str(self.random_gen.uniform(-100, 100)))
+        return ret
 
 
 class ServerSimulator(BasicHandler):
-    def __init__(self, request: _RetAddress, client_address: _RetAddress, server: BaseServer, directory: str, filename_base: str, file_extension: str = ".csv", document_builder: DocumentBuilder = DocumentBuilder(), username: str | None = None, password: str | None = None) -> None:
+    def __init__(self, request: _RetAddress, client_address: _RetAddress, server: BaseServer, data_reader: DataReaderBase, document_builder: DocumentBuilder = DocumentBuilder(), username: str | None = None, password: str | None = None) -> None:
         super().__init__(request, client_address, server, document_builder, username, password)
-        self.numfile = len(tuple(pathlib.Path(directory).glob(f"{filename_base}*{file_extension}")))
-        self.directory = directory
-        self.filename_base = filename_base
-        self.filename_extension = file_extension
-        self.__fileindex = 0
-        self.__Time = time.time()
-        self.__openFile()
-
-    def __openFile(self) -> None:
-        self.filename = self.directory + "/" + self.filename_base + str(self.__fileindex) + self.filename_extension
-        self.fp = open(self.filename, "r")
+        self.data_reader = data_reader
+        self.line = self.data_reader.Read()
+        self.last_time = datetime.datetime.strptime(self.line[0])
 
     def __closeFile(self) -> None:
-        self.fp.close()
+        del self.data_reader
+
+    def do_GET(self) -> None:
+        if (not self.authenticate()):
+            return
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        if self.last_time < datetime.datetime.now():
+            self.line = self.data_reader.Read()
+            self.last_time = datetime.datetime.strptime(self.line[0])
+        self.wfile.write(self.builder.buildDocument().encode("utf-8"))
 
     def __del__(self) -> None:
         self.__closeFile()
