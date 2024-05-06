@@ -1,5 +1,6 @@
 from typing import Self
-from GL840 import SPECIAL_VALUE
+from GL840 import SPECIAL_VALUE, TIME_FORMAT
+import datetime
 DATA_PER_ROW = 3
 
 
@@ -19,14 +20,18 @@ class ColorWheel:
             self.index += 1
         return self.col[self.index - 1]
 
+    def Initialize(self) -> None:
+        self.index = 0
+
 
 class ValueContainer:
     def __init__(self, numCH: int = 20, numGS: int = 8) -> None:
         self.numCH = numCH
         self.numGS = numGS
-        self.value: list[SPECIAL_VALUE | float] = []
+        self.value: list[float | str] = []
         self.unit: list[str] = []
         self.name: list[str] = []
+        self.time: datetime.datetime = datetime.datetime(1900, 1, 1)
         for i in range(numCH):
             self.value.append(0)
             self.unit.append("C")
@@ -36,7 +41,7 @@ class ValueContainer:
             self.unit.append("degC")
             self.name.append(f"GS {i+1}")
 
-    def SetItem(self, name: str, value: float | SPECIAL_VALUE, unit: str) -> None:
+    def SetItem(self, name: str, value: float | str, unit: str) -> None:
         index = self.name.index(name)
         self.value[index] = value
         self.unit[index] = unit
@@ -52,6 +57,7 @@ class DocumentBuilder:
         self.colwheel = ColorWheel()
 
     def buildDocument(self) -> str:
+        self.colwheel.Initialize()
         text = self.header
         text += self.TableHeader
         index = 0
@@ -65,20 +71,20 @@ class DocumentBuilder:
         return text
 
     def buildTableElement(self, channel_name: str, value: float | str, unit: str, col: str) -> str:
-        if type(value) is float:
-            if value >= 0:
-                value = f"+ {value:.1f}"
+        if value not in SPECIAL_VALUE or type(value) is float:
+            _value = float(value)
+            if _value >= 0:
+                value = f"+ {_value:.3f}"
             else:
-                value = f"- {value:.1f}"
+                value = f"- {-_value:.3f}"
         return f"<td><table height=90 width=155 border=1 cellpadding=0 cellspacing=0 bgcolor=white><tr><td><font size=4 color={col}><b>&nbsp;{channel_name}</b></font></td></tr><tr><td><font size=6 color={col}><b>&nbsp;{value}</b></font></td></tr><tr><td><font size=4 color={col}><b>&nbsp;{unit}</b></font></td></tr></table></td>"
 
-    def SetItems(self, value: list[float | SPECIAL_VALUE]) -> None:
+    def SetItems(self, time: str | datetime.datetime, value: list[float | str]) -> None:
+        if type(time) is str:
+            self.value.time = datetime.datetime.strptime(time, TIME_FORMAT)
+        elif type(time) is datetime.datetime:
+            self.value.time = time
         if len(value) != len(self.value.name):
-            raise ValueError("The number of values does not match the number of channels.")
+            raise ValueError(f"The number of values ({len(value)}) does not match the number of channels ({len(self.value.name)}).")
         for i in range(len(value)):
             self.value.SetItem(self.value.name[i], value[i], self.value.unit[i])
-
-
-builder = DocumentBuilder()
-
-print(builder.buildDocument())

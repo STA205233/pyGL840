@@ -20,7 +20,7 @@ Author: Shota Arai
 Date: 2022/11/30
 """
 
-from typing import Literal
-SPECIAL_VALUE = Literal["+++++++", "Off"]
+SPECIAL_VALUE: tuple[str, ...] = ("+++++++", "Off")
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 ENCODE = "utf-8"
 __all__ = ["SPECIAL_VALUE", "ENCODE", "Converter", "DataAcquisition", "MongoDBHandler", "ServerSimulator", "DocumentBuilder"]

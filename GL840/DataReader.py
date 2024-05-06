@@ -15,13 +15,14 @@ DataFormat:
 """
 
 import pathlib
+from GL840 import SPECIAL_VALUE
 
 
 class DataReaderBase:
     def __init__(self) -> None:
         pass
 
-    def Read(self) -> list[str]:
+    def Read(self) -> list[str | float]:
         raise SyntaxError("Class DataReaderBase cannot be used directly.")
 
 
@@ -50,7 +51,7 @@ class DataReader(DataReaderBase):
         self.filename = filename
         self.__fp = open(filename, "r")
 
-    def ReadLine(self) -> list[str]:
+    def ReadLine(self) -> list[str | float]:
         """
         Read one line
 
@@ -68,13 +69,22 @@ class DataReader(DataReaderBase):
         """
 
         text = self.__fp.readline().strip().split(",")
-        return text
+        _ret = DataReader.ConvertStr2Float(text)
+        return _ret
 
-    def Read(self) -> list[str]:
+    def Read(self) -> list[str | float]:
         return self.ReadLine()
 
     def __del__(self) -> None:
         self.__fp.close()
+
+    @staticmethod
+    def ConvertStr2Float(values) -> list[str | float]:
+        _ret: list[float | str] = []
+        for i in range(1, len(values)):
+            if values[i] not in SPECIAL_VALUE:
+                _ret[i] = float(values[i])
+        return _ret
 
 
 class DataReaderMultiple(DataReader):
@@ -90,7 +100,7 @@ class DataReaderMultiple(DataReader):
         self.filename = self.directory + "/" + self.filename_base + str(self.__fileindex) + self.filename_extension
         self.fp = open(self.filename, "r")
 
-    def ReadLine(self) -> list[str]:
+    def ReadLine(self) -> list[str | float]:
         text = super().ReadLine()
         if text == "":
             self.__fileindex += 1
@@ -100,5 +110,5 @@ class DataReaderMultiple(DataReader):
             text = super().ReadLine()
         return text
 
-    def Read(self) -> list[str]:
+    def Read(self) -> list[str | float]:
         return self.ReadLine()
