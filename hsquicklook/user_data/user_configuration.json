@@ -1,5 +1,5 @@
 {
-  "ws_host": "192.168.10.11",
+  "ws_host": "192.168.1.5",
   "ws_port": "8080",
   "title": "HSQuickLook",
   "ti_scaling": 64,
@@ -8,7 +8,8 @@
       "Short_Term_Trend": "user_data/schema/Short_Term_Trend.js",
       "Long_Term_Trend": "user_data/schema/Long_Term_Trend.js",
       "Temperature": "user_data/schema/temp.js",
-      "Temperature_refill": "user_data/schema/temp2.js"
+      "Temperature_refill": "user_data/schema/temp2.js",
+      "with_MPT200": "user_data/schema/with_MPT200.js"
     }
   }
 }

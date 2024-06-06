@@ -9,7 +9,7 @@ HSQuickLook.main.schema =
       "tableName": "GL840",
       "contents": {
         "Outer_Vacuum":       { "source": "Ch1", "conversion": conversion_PKR251, "type": "float", "format": "%-5.2e Pa", "status": function (v) {return status_func("Ch1",v); }},
-        // "Pressure_inner_MPT200": { "source": "Ch2", "conversion": conversion_MPT200AR, "type": "float", "format": "%-5.2e Pa", "status": function (v) {return status_func("Ch2",v); }},
+        "Pressure_inner_MPT200": { "source": "Ch2", "conversion": conversion_MPT200AR, "type": "float", "format": "%-5.2e Pa", "status": function (v) {return status_func("Ch2",v); }},
         "Inner_Pressure": { "source": "Ch3",  "type": "float", "format": "%.3f Bar", "status": function (v) {return status_func("Ch3",v); }},
         "LAr_Level":         { "source": "Ch4",  "type": "float", "format": "%.2f cm", "status": function (v) {return status_func("Ch4",v); }},
         "Oxygen":                 { "source": "Ch5", "conversion": conversion_OX600, "type": "float", "format": "%-5.1f &#037;", "status": function (v) {return status_func("Ch5",v); }},
