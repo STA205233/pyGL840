@@ -113,7 +113,7 @@ class GL840Configuration():
         self.username = username
         self.channels = channels
         self.__channel_status: list[bool] = [True for i in range(channels)]
-        self.__channel_name: list[str] = [f"Ch{i+1}" for i in range(channels)]
+        self.__channel_name: list[str] = [f"Ch{i + 1}" for i in range(channels)]
 
     @property
     def password(self) -> Optional[str]:
@@ -333,7 +333,7 @@ class DataAcquisition():
                 data_list[i] = str(data_list[i])
                 continue
         self.data = GL840Data(data_list, self.config)
-        if self.__initialized:
+        if self.__initialized and self.csv_file_base is not None:
             if self.__is_single:
                 self.writer.write([[self.data.time, *self.data.data], ])
             else:
