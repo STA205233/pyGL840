@@ -269,7 +269,7 @@ class MongoDBPuller():
         self.dbs = self.client[database]
         self.collec = self.dbs[collection]
 
-    def pull_one(self, directory: str | None = None, document: str | None = None) -> MongoDBData | None:
+    def pull_one(self, directory: str | None = None, document: str | None = None, filter: dict[str, Any] = {}) -> MongoDBData | None:
         """
         Pull the latest data from the MongoDB.
 
@@ -280,6 +280,8 @@ class MongoDBPuller():
             The directory name. If None, the latest data independent on directory is pulled.
         document : str | None (Default None)
             The document name. If None, the latest data independent on document is pulled.
+        filter: dict[str, Any] (Default {})
+            The filter for the MongoDB.
 
         Returns
         --
@@ -287,7 +289,6 @@ class MongoDBPuller():
         data : MongoDBData | None
             The latest data pulled from the MongoDB. If None, the data is not found.
         """
-        filter = {}
         if directory is not None:
             filter["__directory__"] = directory
         if document is not None:
