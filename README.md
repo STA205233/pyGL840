@@ -27,8 +27,14 @@ If you use HSQuickLook(<https://github.com/odakahirokazu/HSQuicklook>), you must
 - pymongo
 
   Module for handle mongoDB (Optional).
-
+  
   `pip install pymongo`
+
+- sounddevice
+  
+  Module to warn you in case of error (Optional)
+  
+  `pip install sounddevice`.
 
 ## How to Use
 

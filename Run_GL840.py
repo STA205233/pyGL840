@@ -7,7 +7,7 @@ import GL840.Converter as Converter
 
 def run():
     # The length of channel name must be the number of enabled channels
-    channel_name = [f"Ch{i+1}" for i in range(28)]
+    channel_name = [f"Ch{i + 1}" for i in range(28)]
     channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
@@ -16,7 +16,7 @@ def run():
     config.channel_status = [True for i in range(20)]
     config.channel_name = channel_name
     daq = Daq.DataAcquisition(
-        config, csv_file_base="test", mongo=mongo, override=True, num_event_per_file=100)
+        config, csv_file_base="test", mongo=mongo, overwrite=True, num_event_per_file=100, warning=True)
     # daq.set_function(0, Converter.Unity)
     daq.initialize_single()
     while 1:
