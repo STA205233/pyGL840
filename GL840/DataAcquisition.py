@@ -222,7 +222,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, overwrite: bool = False, num_event_per_file: int = 10000, warning: bool = True) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Of]+?|[BURNOT]+?|[\+]+?)\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, overwrite: bool = False, num_event_per_file: int = 10000, warning: bool = True) -> None:
         """
         Acquire the data of GL840
 
