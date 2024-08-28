@@ -10,7 +10,7 @@ import os
 def run():
     # The length of channel name must be the number of enabled channels
     channel_name = [f"Ch{i+1}" for i in range(28)]
-    # channel_name[0] = "Temperature_1"
+    channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
         "192.168.1.11", 80, username="GL840", password="GL840", channels=28)
@@ -30,7 +30,7 @@ def run():
     
 
     daq = Daq.DataAcquisition(
-        config, csv_file_base=f"/Users/nanograms/work/quicklook/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, override=False, num_event_per_file=1000)
+        config, csv_file_base=f"/Users/nanograms/work/quicklook/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, overwrite=False, num_event_per_file=1000, warning=True)
     # daq.set_function(0, Converter.Unity)
     daq.initialize_single()
     while 1:

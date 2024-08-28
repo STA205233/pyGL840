@@ -26,6 +26,10 @@ def convert2ti(unixtime: float) -> int:
     return ti
 
 
+def convert2unixtime(ti: int) -> float:
+    return float(ti) / float(TI_RATE)
+
+
 class MongoDBSection():
     """
     Section structure for HSQuickLook.
@@ -119,7 +123,7 @@ class MongoDBData():
         MongoDBSection
     """
 
-    def __init__(self, directory: str, document: str, sections: list[MongoDBSection], unixtime: Optional[float | datetime.datetime] = None) -> None:
+    def __init__(self, directory: str, document: str, sections: list[MongoDBSection], unixtime: Optional[float | datetime.datetime] = None, ti: int | None = None) -> None:
         """
         Data structure for HSQuickLook.
 
@@ -150,7 +154,10 @@ class MongoDBData():
             self.unixtime = unixtime
         else:
             self.unixtime = int(unixtime.timestamp())
-        self.ti = convert2ti(self.unixtime)
+        if ti is None:
+            self.ti = convert2ti(self.unixtime)
+        else:
+            self.ti = ti
         self.sections = sections
 
     def __call__(self) -> dict[str, Any]:
@@ -212,7 +219,7 @@ class MongoDBPusher():
 
         None
         """
-        self.client = mongo_client.MongoClient(ip, port)
+        self.client: mongo_client.MongoClient = mongo_client.MongoClient(ip, port)
         assert self.client is not None
         self.dbs = self.client[database]
         self.collec = self.dbs[collection]
@@ -233,3 +240,71 @@ class MongoDBPusher():
         None
         """
         self.collec.insert_one(data())
+
+
+class MongoDBPuller():
+    def __init__(self, ip: Optional[str] = None, port: Optional[int] = None, database: str = "GL840", collection: str = "GL840") -> None:
+        """
+        Push the data into MongoDB.
+
+        Parameters
+        --
+
+        ip : Optional[str]
+            Ip address of MongoDB. If None, the  ip address is set to default value.
+        port : Optional[int]
+            Port of MongoDB. If None, the port is set to default value.
+        database : str, default "GL840"
+            Database name.
+        collection : str, default "GL840"
+            Collection name.
+
+        Returns
+        --
+
+        None
+        """
+        self.client = mongo_client.MongoClient(ip, port)
+        assert self.client is not None
+        self.dbs = self.client[database]
+        self.collec = self.dbs[collection]
+
+    def pull_one(self, directory: str | None = None, document: str | None = None, filter: dict[str, Any] = {}) -> MongoDBData | None:
+        """
+        Pull the latest data from the MongoDB.
+
+        Parameters
+        --
+
+        directory : str | None (Default None)
+            The directory name. If None, the latest data independent on directory is pulled.
+        document : str | None (Default None)
+            The document name. If None, the latest data independent on document is pulled.
+        filter: dict[str, Any] (Default {})
+            The filter for the MongoDB.
+
+        Returns
+        --
+
+        data : MongoDBData | None
+            The latest data pulled from the MongoDB. If None, the data is not found.
+        """
+        if directory is not None:
+            filter["__directory__"] = directory
+        if document is not None:
+            filter["__document__"] = document
+        ret = self.collec.find(filter).sort({"_id": -1}).limit(1)[0]
+        if ret is not None:
+            ti = ret["__ti__"]
+            directory_ret = ret["__directory__"]
+            document_ret = ret["__document__"]
+            sections = ret["__sections__"]
+            _sections = []
+            for i in range(len(sections)):
+                name = sections[i]["__section__"]
+                contents = sections[i]["__contents__"]
+                sec = MongoDBSection(name, contents)
+                _sections.append(sec)
+            return MongoDBData(directory_ret, document_ret, _sections, convert2unixtime(ti), ti)
+        else:
+            return None

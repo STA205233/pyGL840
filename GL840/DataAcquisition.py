@@ -45,6 +45,8 @@ An example is shown below.
 Author : Shota Arai
 Date : 2022/12/12
 
+---------------------
+2024/08/28 : Warning mode
 """
 
 import requests
@@ -60,6 +62,7 @@ from multiprocessing import Process, Queue
 from .MongoDBHandler import MongoDBPusher, MongoDBData, MongoDBSection
 import queue
 import os
+from GL840.GL840Exceptions import ChannelNotMatchError, GL840ConnectionError
 
 
 TI_DIVIDE = 64
@@ -113,7 +116,7 @@ class GL840Configuration():
         self.username = username
         self.channels = channels
         self.__channel_status: list[bool] = [True for i in range(channels)]
-        self.__channel_name: list[str] = [f"Ch{i+1}" for i in range(channels)]
+        self.__channel_name: list[str] = [f"Ch{i + 1}" for i in range(channels)]
 
     @property
     def password(self) -> Optional[str]:
@@ -219,7 +222,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, overwrite: bool = False, num_event_per_file: int = 10000, warning: bool = True) -> None:
         """
         Acquire the data of GL840
 
@@ -240,7 +243,7 @@ class DataAcquisition():
         self.strip_word = strip_word
         self.__initialized = False
         self.__is_single = False
-        self.__override = override
+        self.__overwrite = overwrite
         self.config = status
         self.pattern = re.compile(pat)
         self.func: list[Callable] = [
@@ -255,6 +258,7 @@ class DataAcquisition():
             self.__csv_file = ""
         else:
             self.__csv_file = self.csv_file_base + str(self.file_index) + ".csv"
+        self.warning = warning
 
     def set_function(self, index: int, func: Callable) -> None:
         if index > self.config.channels:
@@ -299,7 +303,7 @@ class DataAcquisition():
             self.__is_single = True
             return 0
         self.writer = Writer(csv_file=self.__csv_file,
-                             buffer_num=self.write_interval, override=self.__override)
+                             buffer_num=self.write_interval, override=self.__overwrite)
         self.writer.write([["Time", *self.config.channel_name], ])
         self.__is_single = True
         self.__initialized = True
@@ -310,9 +314,15 @@ class DataAcquisition():
             raise NotInitializedMultiException
         self.__update_file()
         if self.config.username is not None and self.config.password is not None:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            try:
+                site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
+            except requests.exceptions.ConnectionError:
+                raise GL840ConnectionError(notify=self.warning)
         else:
-            site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", timeout=timeout)
+            try:
+                site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", timeout=timeout)
+            except requests.exceptions.ConnectionError:
+                raise GL840ConnectionError(notify=self.warning)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
         text = site_data.text
@@ -326,7 +336,7 @@ class DataAcquisition():
                 print(text, file=fp)
                 print(f"debug file written to {filename}")
             raise ChannelNotMatchError(
-                f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
+                f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).", notify=self.warning)
         for i in range(self.config.channels - 1, -1, -1):
             if not self.config.channel_status[i]:
                 data_list[i] = "Disabled"
@@ -337,7 +347,7 @@ class DataAcquisition():
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
                 continue
         self.data = GL840Data(data_list, self.config)
-        if self.__initialized:
+        if self.__initialized and self.csv_file_base is not None:
             if self.__is_single:
                 self.writer.write([[self.data.time, *self.data.data], ])
             else:
@@ -378,11 +388,6 @@ class DataAcquisition():
             self.event_index = 1
         else:
             self.event_index += 1
-
-
-class ChannelNotMatchError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
 
 
 class Writer():
