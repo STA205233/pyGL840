@@ -219,7 +219,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, override: bool = False, num_event_per_file: int = 10000) -> None:
         """
         Acquire the data of GL840
 
@@ -320,6 +320,11 @@ class DataAcquisition():
             text = text.replace(_pat, self.replace_pat[_pat])
         data_list: list[Any] = re.findall(self.pattern, text)
         if len(data_list) != self.config.channels:
+            dt_now = datetime.now()
+            filename = f"debug{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}.log"
+            with open(filename, "w") as fp:
+                print(text, file=fp)
+                print(f"debug file written to {filename}")
             raise ChannelNotMatchError(
                 f"The length of input data ({len(data_list)}) does not match Channel number ({self.config.channels}).")
         for i in range(self.config.channels - 1, -1, -1):

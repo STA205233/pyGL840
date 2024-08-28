@@ -36,6 +36,8 @@ def run():
     while 1:
         try:
             daq.data_acquire(1, 5)
+        except Daq.ChannelNotMatchError:
+            continue
         except KeyboardInterrupt:
             break
     daq.finalize_single(True)

@@ -4,7 +4,7 @@ from math import log10
 This is for MPT 200 AR. These conversion rules are taken from https://www.pfeiffer-vacuum.com/filepool/file/digiline/pg0029ben_f.pdf?referer=1838&detailPdoId=13256&request_locale=en_US
 """
 conversion: dict[str, list[float]] = {"Pa": [5.6, 9.333], "kPa": [7.4, 2.33], "Torr": [6.875, 11.46], "hPa": [6.8, 11.33], "mbar": [6.8, 11.33], "ubar": [5.0, 8.333], "mTorr": [5.075, 8.458]}
-UNIT: Literal["Pa", "kPa", "Torr", "hPa", "mbar", "ubar", "mTorr"] = "hPa"
+UNIT: Literal["Pa", "kPa", "Torr", "hPa", "mbar", "ubar", "mTorr"] = "Pa"
 
 
 def VtoP(V: float) -> float:
