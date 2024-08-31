@@ -32,32 +32,12 @@ HSQuickLook.main.schema =
       "tableName": "Tempareture",
       "contents": {
         "Top_Baffle": { "source": "Ch16", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch16", v); } },
-        "FEC0_Heater": { "source": "Ch17", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
-        "FEC1_Heater": { "source": "Ch18", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
-        "FEC2_Heater": { "source": "Ch", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
+        "TPC_Baffle": { "source": "Ch15", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch15", v); } },
+        "FEC_Heater": { "source": "Ch20", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
         "Above_Anode": { "source": "Ch14", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch14", v); } },
         "Below_Anode": { "source": "Ch13", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch13", v); } },
         "SiPM": { "source": "Ch12", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch12", v); } },
         "Bottom_Heater": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) { Bottom_tempareture = v; return status_func_temp("Ch11", v); } },
-      }
-    },
-    {
-      "collection": "GL840",
-      "directory": "GL840",
-      "document": "GL840",
-      "period": 60,
-      "tableName": "Heater_temp",
-      "section": "GL840",
-      "contents": {
-        "Temperature": {
-          "type": "trend-graph",
-          "group": [
-            { "source": "Ch17", "options": { "legend": "FEC0_Heater", "color": "red" } },
-            { "source": "Ch18", "options": { "legend": "FEC1_Heater", "color": "blue" } },
-            { "source": "Ch19", "options": { "legend": "FEC2_Heater", "color": "green" } },
-          ],
-          "options": { "xWidth": 3600, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
-        },
       }
     },
 

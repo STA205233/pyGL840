@@ -26,11 +26,11 @@ class ChannelNotMatchError(GL840BaseException):
     def __init__(self, description: str | None = None, title: str = "Channel Not Match Error", notify: bool = True) -> None:
         super().__init__(title, description)
         if notify:
-            super().sound([880, 0, 880, 0], [0.1, 0.05, 0.1, 0.2], 0.4, title, description)
+            super().sound([880 * 2, 0, 880 * 2, 0], [0.1, 0.05, 0.1, 0.2], 0.4, title, description)
 
 
 class GL840ConnectionError(GL840BaseException):
     def __init__(self, description: str | None = None, title: str = "Connection Error", notify: bool = True) -> None:
         super().__init__(title, description)
         if notify:
-            super().sound([880, 0, 880, 0], [0.1, 0.05, 0.1, 0.2], 0.4, title, description)
+            super().sound([880 * 2, 0, 880 * 2, 0], [0.1, 0.05, 0.1, 0.2], 0.4, title, description)

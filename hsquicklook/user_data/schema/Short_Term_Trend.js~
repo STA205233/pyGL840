@@ -32,32 +32,12 @@ HSQuickLook.main.schema =
       "tableName": "Tempareture",
       "contents": {
         "Top_Baffle": { "source": "Ch16", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch16", v); } },
-        "FEC0_Heater": { "source": "Ch17", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
-        "FEC1_Heater": { "source": "Ch18", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
-        "FEC2_Heater": { "source": "Ch", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
+        "TPC_Baffle": { "source": "Ch15", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch15", v); } },
+        "FEC_Heater": { "source": "Ch20", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func("Ch20", v); } },
         "Above_Anode": { "source": "Ch14", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch14", v); } },
         "Below_Anode": { "source": "Ch13", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch13", v); } },
         "SiPM": { "source": "Ch12", "type": "float", "format": "%.3f &#8451;", "status": function (v) { return status_func_temp("Ch12", v); } },
         "Bottom_Heater": { "source": "Ch11", "type": "float", "format": "%.3f &#8451;", "status": function (v) { Bottom_tempareture = v; return status_func_temp("Ch11", v); } },
-      }
-    },
-    {
-      "collection": "GL840",
-      "directory": "GL840",
-      "document": "GL840",
-      "period": 60,
-      "tableName": "Heater_temp",
-      "section": "GL840",
-      "contents": {
-        "Temperature": {
-          "type": "trend-graph",
-          "group": [
-            { "source": "Ch17", "options": { "legend": "FEC0_Heater", "color": "red" } },
-            { "source": "Ch18", "options": { "legend": "FEC1_Heater", "color": "blue" } },
-            { "source": "Ch19", "options": { "legend": "FEC2_Heater", "color": "green" } },
-          ],
-          "options": { "xWidth": 3600, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
-        },
       }
     },
 
@@ -75,7 +55,7 @@ HSQuickLook.main.schema =
             { "source": "Ch5", "conversion": conversion_OX600, "options": { "legend": "O2", "color": "red" } }
           ],
           "options": {
-            "xWidth": 3600, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
+            "xWidth": 1000, "yRange": [0.0, 30], "frame": { "height": 270, "width": 480 }
           },
         },
         "Temperature": {
@@ -90,14 +70,14 @@ HSQuickLook.main.schema =
             { "source": "Ch12", "options": { "legend": "SiPM", "color": "blue" } },
             { "source": "Ch11", "options": { "legend": "Bottom", "color": "red" } },
           ],
-          "options": { "xWidth": 3600, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [-200, 30], "frame": { "height": 270, "width": 480 } }
         },
         "LAr_Level": {
           "type": "trend-graph",
           "group": [
             { "source": "Ch4", "options": { "legend": "level", "color": "red" } },
           ],
-          "options": { "xWidth": 3600, "yRange": [-1, 70], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [-1, 70], "frame": { "height": 270, "width": 480 } }
         },
       }
     },
@@ -114,14 +94,14 @@ HSQuickLook.main.schema =
           "group": [
             { "source": "Ch1", "conversion": conversion_PKR251, "options": { "legend": "Outer", "color": "red" } },
           ],
-          "options": { "xWidth": 3600, "yRange": [0, 0.05], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [0, 0.05], "frame": { "height": 270, "width": 480 } }
         },
         "Inner_Pressure": {
           "type": "trend-graph",
           "group": [
             { "source": "Ch3", "options": { "legend": "Inner", "color": "green" } },
           ],
-          "options": { "xWidth": 3600, "yRange": [0.5, 3.0], "frame": { "height": 270, "width": 480 } }
+          "options": { "xWidth": 1000, "yRange": [0.5, 3.0], "frame": { "height": 270, "width": 480 } }
         }
       }
 
@@ -164,12 +144,12 @@ var status_configuration = {
   "Ch4": { "safe_range": [-1, 20], "warning_range": [-1, 25] },
   "Ch5": { "safe_range": [20.6, 22], "warning_range": [20.3, 20.6] },
   "Ch7": { "warning_range": [-1e6, -0.05] },
-  "Ch11": { "LAr_temp": [-189, -185] },
-  "Ch12": { "LAr_temp": [-189, -185] },
-  "Ch13": { "LAr_temp": [-189, -185] },
-  "Ch14": { "LAr_temp": [-189, -185] },
-  "Ch15": { "LAr_temp": [-189, -185] },
-  "Ch16": { "LAr_temp": [-189, -185] },
+  "Ch11": { "LAr_temp": [-189, -183] },
+  "Ch12": { "LAr_temp": [-189, -183] },
+  "Ch13": { "LAr_temp": [-189, -183] },
+  "Ch14": { "LAr_temp": [-189, -183] },
+  "Ch15": { "LAr_temp": [-189, -183] },
+  "Ch16": { "LAr_temp": [-189, -183] },
   "Ch20": { "safe_range": [-1e+6, 50], "warning_range": [25, 50] },
   "tempareture_warning": { "safe_range": [5, 50], "warning_range": [0, 5] }
 };

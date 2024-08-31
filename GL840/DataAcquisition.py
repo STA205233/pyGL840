@@ -222,7 +222,7 @@ class DataAcquisition():
 
     """
 
-    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?)\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, overwrite: bool = False, num_event_per_file: int = 10000, warning: bool = True) -> None:
+    def __init__(self, status: GL840Configuration, write_interval: int = 10, maxsize_query: int = 50, strip_word: str = "<b>&nbsp;</b>", pat: str = r"<b>&nbsp;([\+\-]\s*?[0-9.]+?|[Off]+?|[BURNOUT]+?|[\+]+?|[\-]{2,})\s*?</b>", replace_pat_list: dict[str, str] = {r"<font size=6>&nbsp;</font>": ""}, csv_file_base: Optional[str] = None, mongo: Optional[MongoDBPusher] = None, overwrite: bool = False, num_event_per_file: int = 10000, warning: bool = True) -> None:
         """
         Acquire the data of GL840
 
@@ -331,8 +331,11 @@ class DataAcquisition():
         data_list: list[Any] = re.findall(self.pattern, text)
         if len(data_list) != self.config.channels:
             dt_now = datetime.now()
-            filename = f"debug{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}.log"
+            filename = f"debug{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}.log"
             with open(filename, "w") as fp:
+                print(f"config channels: {self.config.channels}", file = fp)
+                print(f"data_list: {data_list}", file=fp)
+                print("received text: ", file=fp)
                 print(text, file=fp)
                 print(f"debug file written to {filename}")
             raise ChannelNotMatchError(
@@ -341,7 +344,7 @@ class DataAcquisition():
             if not self.config.channel_status[i]:
                 data_list[i] = "Disabled"
                 continue
-            elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i]):
+            elif ("Off" in data_list[i] or "BURNOUT" in data_list[i] or "+++++++" in data_list[i] or "-------" in data_list[i]):
                 continue
             else:
                 data_list[i] = self.func[i](float(data_list[i].replace(" ", "").strip(self.strip_word)))
@@ -388,7 +391,7 @@ class DataAcquisition():
             self.event_index = 1
         else:
             self.event_index += 1
-
+    
 
 class Writer():
     def __init__(self, csv_file: str, buffer_num: int, queue: Optional[Queue] = None, override: bool = False) -> None:

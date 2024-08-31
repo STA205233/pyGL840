@@ -1,6 +1,24 @@
-.value-status-temp{
+.value-status-temp {
     color: #0ff;
 }
-#table-GL840-GL840-GL840-Tempareture-DewPoint{
-    position: relative; left: -450px; top:240px;
+
+#main-tables table {
+    margin: 0px;
+}
+
+#table-GL840-GL840-GL840-Tempareture-DewPoint {
+    position: relative;
+    left: -450px;
+    top: 240px;
+}
+
+#table-GL840-GL840-GL840-Tempareture {
+    position: absolute;
+    top: 8lh;
+    /*this must be changed when the GL840 table size is changed.*/
+}
+
+#table-GL840-GL840-Gl840-Pressure_linear {
+    position: absolute;
+    left: 100%;
 }

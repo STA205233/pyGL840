@@ -10,7 +10,7 @@ import os
 def run():
     # The length of channel name must be the number of enabled channels
     channel_name = [f"Ch{i+1}" for i in range(28)]
-    channel_name[0] = "Temperature_1"
+    # channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
         "192.168.1.11", 80, username="GL840", password="GL840", channels=28)
@@ -36,8 +36,6 @@ def run():
     while 1:
         try:
             daq.data_acquire(1, 5)
-        except Daq.ChannelNotMatchError:
-            continue
         except KeyboardInterrupt:
             break
     daq.finalize_single(True)

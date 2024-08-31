@@ -5,7 +5,7 @@ import Converter
 if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot()
-    ana = DataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/20240827/144715")
+    ana = DataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/20240606/170459")
     x = []
     y = []
     
