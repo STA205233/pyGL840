@@ -1,5 +1,5 @@
 {
-  "ws_host": "192.168.160.47",
+  "ws_host": "localhost",
   "ws_port": "8080",
   "title": "HSQuickLook",
   "ti_scaling": 64,
@@ -11,6 +11,9 @@
       "Temperature_refill": "user_data/schema/temp2.js",
       "with_MPT200": "user_data/schema/with_MPT200.js",
       "duwar": "user_data/schema/temp_17-19CH.js"
+    },
+    "Event": {
+      "Event": "user_data/schema/EventQL.js"
     }
   }
 }
