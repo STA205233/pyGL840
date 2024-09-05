@@ -55,6 +55,18 @@ class Warning:
             sd.stop()
             self.playing = False
 
+class DataWarning(Warning):
+    def __init__(self, equation: callable, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None):
+        super().__init__()
+        self.frequency = frequency
+        self.second = second
+        self.volume = volume
+        self.message = message
+        self.equation = equation
+    def __call__(self, data: float) -> None:
+        if (self.equation(data)):
+            super().__call__(self.frequency, self.second, self.volume, self.message)
+        return data
 
 if __name__ == "__main__":
     w = Warning()

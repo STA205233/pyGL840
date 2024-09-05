@@ -5,10 +5,10 @@ import Converter
 if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot()
-    ana = DataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/20240606/170459")
+    ana = DataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/20240830/182117")
     x = []
     y = []
-    
+    y2 = []
     for dat in ana:
         try:
             y.append(Converter.VtoP(dat["Ch2"]))
@@ -17,5 +17,7 @@ if __name__ == "__main__":
             continue
         x.append(dat["Time"])
     ax.set_yscale("log")
+    fig.autofmt_xdate()
+    ax.set_ylabel("Inner Pressure [Pa]")
     ax.plot(x, y)
     plt.show()

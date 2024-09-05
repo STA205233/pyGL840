@@ -37,3 +37,8 @@ class Linear():
 
     def __call__(self, value: float) -> float:
         return self.coe[1] * value + self.coe[0]
+
+def conversion_OX600(v):
+    R = 151.6
+    I = 1000.0 * v / R
+    return 25.0 * (I - 4.0) / (20.0 - 4.0)
