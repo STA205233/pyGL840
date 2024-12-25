@@ -5,10 +5,13 @@ import glob
 
 
 class DataAnalyzer():
-    def __init__(self, filename_header: str) -> None:
+    def __init__(self, filename_header: str, quiet: bool = False) -> None:
         self.__fp: TextIO | None = None
         self.__filenames = sorted(glob.glob(filename_header + "*.csv"), key=lambda x: int(x.split("_")[-1].split(".")[0]))
-        print(self.__filenames)
+        self.__quiet = quiet
+        if not self.__quiet:
+            print("File list:")
+            print(self.__filenames)
         self.__header: list[str] = []
         self.__index = 0
 
@@ -18,14 +21,16 @@ class DataAnalyzer():
     def __next__(self) -> dict[str, float | dt.datetime | None]:
         if self.__fp is None:
             self.__fp = open(self.__filenames[0], "r")
-            self.__header = self.__fp.readline().split(",")
+            if not self.__quiet:
+                print(f"Opening {self.__filenames[0]}")
+            self.__header = self.__fp.readline().rstrip().split(",")
         data = self.__get_data()
         if data is None:
             self.__index += 1
             if self.__index >= len(self.__filenames):
                 raise StopIteration
             self.__fp = open(self.__filenames[self.__index], "r")
-            self.__header = self.__fp.readline().split(",")
+            self.__header = self.__fp.readline().rstrip().split(",")
             data = self.__get_data()
             if data is None:
                 raise StopIteration
