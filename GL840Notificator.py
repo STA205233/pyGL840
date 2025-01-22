@@ -32,7 +32,7 @@ def __notify_sound(warning, frequency, second, volume, message):
 def __notify(slack, warning, data):
     if float(data["Oxygen"]) < 19:
         __notify_slack(slack, "Oxygen", data["Oxygen"], channel)
-        __notify_sound(warning, [1000, 2000], [0.5, 0.5], 1, f"Oxygen is Low({data['Oxygen']})")cd 
+        __notify_sound(warning, [1000, 2000], [0.5, 0.5], 1, f"Oxygen is Low({data['Oxygen']})")
 
 
 def __main():

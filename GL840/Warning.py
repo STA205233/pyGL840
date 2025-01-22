@@ -7,12 +7,17 @@ Warning sound
 ---------------------
 Author: Shota Arai
 Date: 2024/08/28
+
+2025/01/22: If not SOUND_DEVICE, print "sounddevice is not installed."
 """
 
 SOUND_DEVICE = False
 try:
     import sounddevice as sd
-    import numpy as np
+    try:
+        import numpy as np
+    except ImportError:
+        raise ImportError("numpy is not installed.")
     SOUND_DEVICE = True
     SAMPLE_RATE = 44100
     sd.default.samplerate = SAMPLE_RATE
@@ -24,6 +29,8 @@ except ImportError:
 class Warning:
     def __init__(self) -> None:
         self.playing = False
+        if not SOUND_DEVICE:
+            print("sounddevice is not installed.")
 
     def __call__(self, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None) -> None:
         if message is not None:
