@@ -89,6 +89,24 @@ class MongoDBSection():
         """
         return {"__section__": self.section, "__contents__": self.contents}
 
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get the contents of the key.
+
+        Parameters
+        --
+
+        key : str
+            The key of the contents.
+
+        Returns
+        --
+
+        value : Any
+            The value of the key.
+        """
+        return self.contents[key]
+
 
 class MongoDBData():
     """
@@ -138,7 +156,7 @@ class MongoDBData():
             Time indexer.
         unixtime : int
             Unix time.
-        sections : list[MongoDBSection]
+        sections : dict[str, MongoDBSection]
             MongoDB sections.
 
         Returns
@@ -177,6 +195,24 @@ class MongoDBData():
 
         """
         return {"__directory__": self.directory, "__document__": self.document, "__ti__": self.ti, "__unixtime__": self.unixtime, "__sections__": [section() for section in self.sections]}
+
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get the contents of the key.
+
+        Parameters
+        --
+
+        key : str
+            The key of the contents.
+
+        Returns
+        --
+
+        value : Any
+            The value of the key.
+        """
+        return self.sections[key]
 
 
 class MongoDBPusher():

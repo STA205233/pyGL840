@@ -29,10 +29,11 @@ except ImportError:
 class Warning:
     def __init__(self) -> None:
         self.playing = False
+        self.arr = np.zeros(SAMPLE_RATE)
         if not SOUND_DEVICE:
             print("sounddevice is not installed.")
 
-    def __call__(self, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None) -> None:
+    def __call__(self, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None, blocking=True) -> None:
         if message is not None:
             print(message)
         if SOUND_DEVICE:
@@ -47,7 +48,7 @@ class Warning:
                         assert i < total_sec * SAMPLE_RATE, "The length of t is not enough."
                         data[i] = volume * np.sin(2 * np.pi * frequency[j] * t[i])
                         i += 1
-                sd.play(data, loop=True, blocking=True)
+                sd.play(data, loop=True, blocking=blocking)
                 self.playing = True
             except Exception:
                 self.playing = False
