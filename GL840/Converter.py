@@ -16,6 +16,30 @@ def PtoV(P: float) -> float:
 
 
 """
+These are conversion rules for other sensors.
+
+"""
+
+
+def conversion_MPT200AR(v):
+    return 10 ** (1.667 * v - 9.333)
+
+
+def conversion_PKR251(v):
+    return 10 ** (1.667 * v - 9.333)
+
+
+def conversion_APR262(v):
+    return 20000 * (v - 1.0) / 0.8
+
+
+def conversion_OX600(v):
+    R = 151.6
+    I = 1000.0 * v / R
+    return 25.0 * (I - 4.0) / (20.0 - 4.0)
+
+
+"""
 This is for General use.
 """
 
@@ -29,6 +53,7 @@ def V(V: float) -> float:
 
 
 class Linear():
+
     def __init__(self, coe: Optional[tuple[float, float]]) -> None:
         if coe is not None:
             self.coe = coe

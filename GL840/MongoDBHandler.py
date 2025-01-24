@@ -89,6 +89,24 @@ class MongoDBSection():
         """
         return {"__section__": self.section, "__contents__": self.contents}
 
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get the contents of the key.
+
+        Parameters
+        --
+
+        key : str
+            The key of the contents.
+
+        Returns
+        --
+
+        value : Any
+            The value of the key.
+        """
+        return self.contents[key]
+
 
 class MongoDBData():
     """
@@ -123,7 +141,7 @@ class MongoDBData():
         MongoDBSection
     """
 
-    def __init__(self, directory: str, document: str, sections: list[MongoDBSection], unixtime: Optional[float | datetime.datetime] = None, ti: int | None = None) -> None:
+    def __init__(self, directory: str, document: str, sections: dict[str, MongoDBSection], unixtime: Optional[float | datetime.datetime] = None, ti: int | None = None) -> None:
         """
         Data structure for HSQuickLook.
 
@@ -138,7 +156,7 @@ class MongoDBData():
             Time indexer.
         unixtime : int
             Unix time.
-        sections : list[MongoDBSection]
+        sections : dict[str, MongoDBSection]
             MongoDB sections.
 
         Returns
@@ -177,6 +195,24 @@ class MongoDBData():
 
         """
         return {"__directory__": self.directory, "__document__": self.document, "__ti__": self.ti, "__unixtime__": self.unixtime, "__sections__": [section() for section in self.sections]}
+
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get the contents of the key.
+
+        Parameters
+        --
+
+        key : str
+            The key of the contents.
+
+        Returns
+        --
+
+        value : Any
+            The value of the key.
+        """
+        return self.sections[key]
 
 
 class MongoDBPusher():
@@ -299,12 +335,12 @@ class MongoDBPuller():
             directory_ret = ret["__directory__"]
             document_ret = ret["__document__"]
             sections = ret["__sections__"]
-            _sections = []
+            _sections = {}
             for i in range(len(sections)):
                 name = sections[i]["__section__"]
                 contents = sections[i]["__contents__"]
                 sec = MongoDBSection(name, contents)
-                _sections.append(sec)
+                _sections[name] = sec
             return MongoDBData(directory_ret, document_ret, _sections, convert2unixtime(ti), ti)
         else:
             return None

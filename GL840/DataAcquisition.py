@@ -203,8 +203,7 @@ class GL840Data(MongoDBData):
         for i in range(len(status.channel_name)):
             self.dict[f"{status.channel_name[i]}"] = self.data[i]
         self.section = MongoDBSection(section, self.dict)
-        super().__init__(directory, document, [
-            self.section, ])
+        super().__init__(directory, document, {section: self.section})
 
 
 class DataAcquisition():
