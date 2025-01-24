@@ -1,16 +1,12 @@
 {
-  "ws_host": "192.168.160.47",
+  "ws_host": "192.168.160.8",
   "ws_port": "8080",
   "title": "HSQuickLook",
   "ti_scaling": 64,
   "schema_list": {
     "QuickLook": {
-      "Short_Term_Trend": "user_data/schema/Short_Term_Trend.js",
-      "Long_Term_Trend": "user_data/schema/Long_Term_Trend.js",
-      "Temperature": "user_data/schema/temp.js",
-      "Temperature_refill": "user_data/schema/temp2.js",
-      "with_MPT200": "user_data/schema/with_MPT200.js",
-      "duwar": "user_data/schema/temp_17-19CH.js"
+      "Run5": "user_data/schema/Run5_Trend.js",
+      "Run5_Filling": "user_data/schema/Run5_Filling.js"
     },
     "Event": {
       "Event": "user_data/schema/EventQL.js"

@@ -25,11 +25,11 @@ def run():
         os.makedirs(dirname)
 
     # filename_prefex=f"{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}_{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_"
-    Oxygen = DataWarning(lambda x: (Converter.conversion_OX600(x) < 19.0), [1400, 2800, 1400, 2800], [0.1, 0.1, 0.1, 0.1], message="Oxygen !!")
+    # Oxygen = DataWarning(lambda x: (Converter.conversion_OX600(x) < 19.0), [1400, 2800, 1400, 2800], [0.1, 0.1, 0.1, 0.1], message="Oxygen !!")
     # Heater = DataWarning(lambda x: (x > 0.0), [1200, 600], [0.5, 0.5], 100, message="Heater")
 
-    daq = Daq.DataAcquisition(config)
-        # config, csv_file_base=f"/Users/nanograms/work/quicklook/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, overwrite=False, num_event_per_file=1000, warning=True)
+    daq = Daq.DataAcquisition(
+        config, csv_file_base=f"/Users/nanograms/work/quicklook/GL840Data/{dt_now.year:04}{dt_now.month:02}{dt_now.day:02}/{dt_now.hour:02}{dt_now.minute:02}{dt_now.second:02}_", mongo=mongo, overwrite=False, num_event_per_file=1000, warning=True)
     # daq.set_function(0, Converter.Unity)
     # daq.set_function(4, Oxygen)
     # daq.set_function(1, Heater)
