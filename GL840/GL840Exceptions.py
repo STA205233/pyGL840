@@ -10,16 +10,17 @@ Date: 2024/08/28
 '''
 
 from .Warning import Warning as _Warning
+import time
 
 
 class GL840BaseException(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(args)
 
-    def sound(self, frequency: list[float], second: list[float], volume: float, title: str | None = None, description: str | None = None) -> None:
+    def sound(self, frequency: list[float], second: list[float], volume: float, title: str | None = None, description: str | None = None, loop=True, blocking=True) -> None:
         title_ = title if title is not None else ""
         description_ = "\n" + description if description is not None else ""
-        _Warning()(frequency, second, volume, "\n-------------" + title_ + f"-------------{description_}\nPress Ctrl+C to stop")
+        _Warning()(frequency, second, volume, "\n-------------" + title_ + f"-------------{description_}", loop, blocking)
 
 
 class ChannelNotMatchError(GL840BaseException):
