@@ -33,7 +33,7 @@ class Warning:
         if not SOUND_DEVICE:
             print("sounddevice is not installed.")
 
-    def __call__(self, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None, blocking=True) -> None:
+    def __call__(self, frequency: list[float], second: list[float], volume: float = 1, message: str | None = None, loop=True, blocking=True) -> None:
         if message is not None:
             print(message)
         if SOUND_DEVICE:
@@ -48,7 +48,7 @@ class Warning:
                         assert i < total_sec * SAMPLE_RATE, "The length of t is not enough."
                         data[i] = volume * np.sin(2 * np.pi * frequency[j] * t[i])
                         i += 1
-                sd.play(data, loop=True, blocking=blocking)
+                sd.play(data, loop=loop, blocking=blocking)
                 self.playing = True
             except Exception:
                 self.playing = False

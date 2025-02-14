@@ -194,7 +194,7 @@ class MongoDBData():
             Converted data for HSQuickLook.
 
         """
-        return {"__directory__": self.directory, "__document__": self.document, "__ti__": self.ti, "__unixtime__": self.unixtime, "__sections__": [section() for section in self.sections]}
+        return {"__directory__": self.directory, "__document__": self.document, "__ti__": self.ti, "__unixtime__": self.unixtime, "__sections__": [self.sections[key]() for key in self.sections]}
 
     def __getitem__(self, key: str) -> Any:
         """
