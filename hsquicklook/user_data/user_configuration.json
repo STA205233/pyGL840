@@ -1,6 +1,6 @@
 {
-  "ws_host": "192.168.160.101",
-  "ws_port": "8080",
+  "ws_host": "192.168.10.129",
+  "ws_port": "22224",
   "title": "HSQuickLook",
   "ti_scaling": 64,
   "schema_list": {
