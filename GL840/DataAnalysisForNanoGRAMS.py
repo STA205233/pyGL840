@@ -19,29 +19,31 @@ def plot_scatter_time_series(fig, ax, time, x, y):
 if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot()
-    ana = MultiDataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/2025*")
+    ana = MultiDataAnalyzer("/Users/nanograms/work/quicklook/GL840Data/20250227")
     x = []
     y = []
     # y2 = []
     for dat in ana:
-        if (dat["Time"] > datetime.datetime(2025, 1, 14, 13,30)):
-            break
-        elif(dat["Time"] < datetime.datetime(2025,1,14, 12,30)):
+        # if (dat["Time"] > datetime.datetime(2025, 2, 26, 22,30)):
+        #     break
+        if(dat["Time"] < datetime.datetime(2025, 3,3,12,00)):
             continue
         try:
             # y.append(conversion_OX600(dat["Ch5"]))
             # y.append(Converter.VtoP(dat["Ch2"])/(dat["Ch21"]+273.15)) # P/T
             # y.append(Converter.VtoP(dat["Ch2"]))
-            y.append(dat["Ch3"])
+            # y.append(dat["Ch3"])
             # y2.append(dat["Ch21"]+273.15)
             # y.append(dat["Ch2"])
+            y.append(dat["Ch4"])
         except:
             continue
         x.append(dat["Time"])
     # ax.set_yscale("log")
     x = np.array(x)
     fig.autofmt_xdate()
-    ax.set_ylabel("Inner Pressure[Pa]")
+    # ax.set_ylabel("Inner Pressure[Pa]")
+    ax.set_ylabel("LAr Level[cm]")
     ax.set_xlabel("Time")
     ax.scatter(x, y)
     ax.grid()

@@ -1,12 +1,12 @@
 {
-  "ws_host": "192.168.160.8",
+  "ws_host": "192.168.160.101",
   "ws_port": "8080",
   "title": "HSQuickLook",
   "ti_scaling": 64,
   "schema_list": {
     "QuickLook": {
       "Run5": "user_data/schema/Run5_Trend.js",
-      "Run5_Filling": "user_data/schema/Run5_Filling.js"
+      "Run5_Vacuuming": "user_data/schema/Run5_Vacuuming.js"
     },
     "Event": {
       "Event": "user_data/schema/EventQL.js"

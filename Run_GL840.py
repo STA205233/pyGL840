@@ -10,13 +10,13 @@ from GL840.Warning import DataWarning
 
 def run():
     # The length of channel name must be the number of enabled channels
-    channel_name = [f"Ch{i+1}" for i in range(28)]
+    channel_name = [f"Ch{i+1}" for i in range(20)]
     # channel_name[0] = "Temperature_1"
     mongo = Mongo.MongoDBPusher()
     config = Daq.GL840Configuration(
-        "192.168.1.11", 80, username="GL840", password="GL840", channels=28)
+        "192.168.1.11", 80, username="GL840", password="GL840", channels=20)
     # config.channel_status = [True, False, True] + [False for i in range(17)]
-    config.channel_status = [True for i in range(28)]
+    config.channel_status = [True for i in range(20)]
     config.channel_name = channel_name
     dt_now = datetime.datetime.now()
 

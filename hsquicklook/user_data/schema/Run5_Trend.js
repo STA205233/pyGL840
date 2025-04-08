@@ -18,6 +18,7 @@ HSQuickLook.main.schema =
         "TPC_HV": { "source": "Ch7", "type": "float", "format": "%.3f kV", "status": function (v) { return status_func_HV("Ch7", v); } },
         "Oxygen": { "source": "Ch5", "conversion": conversion_OX600, "type": "float", "format": "%-5.1f &#037;", "status": function (v) { return status_func("Ch5", v); } },
         "Room_Tempareture": { "source": "Ch21", "type": "float", "format": "%.3f &#8451", },
+        "Room_Temperature_thermoouple": { "source": "Ch20", "type": "float", "format": "%.3f &#8451" },
         "Humidity": { "source": "Ch22", "type": "float", "format": "%.3f &#37;" },
         "Dew_Point": { "source": "Ch23", "type": "float", "format": "%.3f &#8451", "conversion": function (v) { dewpoint = v; return v; } },
       }

@@ -17,6 +17,7 @@ except ImportError:
 
 slack_channel = os.environ["SLACK_CHANNEL"]
 slack_channel_info = os.environ["SLACK_CHANNEL_INFO"]
+condition_ts = os.environ["SLACK_CONDITION_TS"]
 
 
 class StatusSound:
@@ -27,8 +28,9 @@ class StatusSound:
 
 
 class STATUS(enum.Enum):
-    Emergency = 3
-    Warning = 2
+    Emergency = 4
+    Warning = 3
+    Caution = 2
     Information = 1
     Normal = 0
 
@@ -38,12 +40,13 @@ class MODE(enum.Enum):
     Test_Slack = -1
     Normal = 1
     Vacuuming = 2
-    Filling = 3
-    Experiment = 4
-    Boiling = 5
+    Vacuuming_with_outer = 3
+    Filling = 4
+    Experiment = 5
+    Boiling = 6
 
 
-status_sound = {STATUS.Emergency: StatusSound([1000.0, 2000.0], [0.1, 0.1], 1), STATUS.Warning: StatusSound([880, 0], [1, 1], 1), STATUS.Information: None, STATUS.Normal: None}
+status_sound = {STATUS.Emergency: StatusSound([1000.0, 2000.0], [0.1, 0.1], 1), STATUS.Warning: StatusSound([880, 0], [1, 1], 1), STATUS.Information: None, STATUS.Normal: None, STATUS.Caution: StatusSound([440, 0], [0.5, 2], 0.7)}
 
 class InfoProvider():
     def __init__(self, slack, slack_channel):
@@ -70,26 +73,26 @@ class InfoProvider():
                 out_vacuum = f"{conversion_PKR251(float(data['GL840']['Ch1'])):.2e} Pa"
             except ValueError:
                 out_vacuum = "No Information"
-            string = f"Oxygen: {ox}\nInner Pressure: {in_pressure}\nInner Vacuum: {in_vacuum}\nOuter Vacuum: {out_vacuum}"
+            string = f"Time: {datetime.datetime.fromtimestamp(data.unixtime)}\nOxygen: {ox}\nInner Pressure: {in_pressure}\nInner Vacuum: {in_vacuum}\nOuter Vacuum: {out_vacuum}"
             print(string)
             if self.last_status is not None:
                 try:
                     self.slack.delete_message(self.last_status["channel"], self.last_status["ts"])
-                except SlackApiError as e:
+                except Exception as e:
                     print(e)
             try:
                 status = self.slack.send_message(self.slack_channel, string)
                 if status["ok"]:
                     self.last_status = status
                     self.last_sent_time = datetime.datetime.now()
-            except SlackApiError as e:
+            except Exception as e:
                 print(e)
     def __del__(self):
         if self.last_status is not None:
             try:
                 self.slack.delete_message(self.last_status["channel"], self.last_status["ts"])
-            except SlackApiError as e:
-                print(e)
+            except Exception as e:
+                print(e) 
 
 
 
@@ -115,6 +118,8 @@ class ErrorManager():
             status = STATUS.Warning
         elif value == STATUS.Emergency:
             status = STATUS.Emergency
+        elif value == STATUS.Caution:
+            status = STATUS.Caution
         elif value == STATUS.Information:
             status = STATUS.Information
         elif value == STATUS.Normal:
@@ -138,7 +143,7 @@ class ErrorManager():
         if self.slack is not None:
             try:
                 self.slack.send_message(channel, string)
-            except SlackApiError as e:
+            except Exception as e:
                 print(e)
 
 
@@ -161,14 +166,13 @@ class ErrorManagerCollection():
             self.__status = STATUS.Normal
             self.__warning.stop()
         elif self.__status != current_status :
-            sound = status_sound[self.__status_sound]
+            sound = status_sound[current_status]
             self.__status = current_status
             if sound is not None:
                 self.__notify_sound(sound.frequency, sound.second, sound.volume, "")
-
     def __notify_sound(self, frequency, second, volume, message, blocking=False):
         if self.__warning is not None:
-            self.__warning(frequency, second, volume, message, blocking)
+            self.__warning(frequency=frequency, second=second, volume=volume, message=message, blocking=blocking)
         else:
             print(message)
 
@@ -185,7 +189,7 @@ def oxygen(value):
         return STATUS.Normal
 
 
-def outer_pressure(value):
+def outer_pressure_in_exp(value):
     value = float(value)
     if value > 1e-2:
         return STATUS.Emergency
@@ -217,8 +221,10 @@ def inner_pressure_in_LAr(v):
     v = float(v)
     if v > 1.8:
         return STATUS.Emergency
-    elif v > 1.5:
+    elif v > 1.6:
         return STATUS.Warning
+    elif v > 1.5:
+        return STATUS.Caution
     else:
         return STATUS.Normal
 
@@ -229,41 +235,46 @@ def inner_vacuum(value):
         return STATUS.Emergency
     elif value > 1e2:
         return STATUS.Warning
+    elif value > 1:
+        return STATUS.Information
     else:
         return STATUS.Normal
 
 
 def construct_error_managers(mode, warning, slack, slack_channel):
     error_managers = ErrorManagerCollection(warning)
-    string = "Condition to alert:\n"
+    string = f"Mode: {mode.name}\n" 
+    string += "Condition to alert:\n"
     error_managers.register(ErrorManager("GL840", "Ch5", oxygen, slack, slack_channel, True, "%", "Oxygen", conversion_OX600))
     string += "\tOxygen: 18--19% Warning, 0--18% Emergency\n"
     if (mode == MODE.Normal):
         pass
-    elif (mode == MODE.Vacuuming):
+    elif (mode == MODE.Vacuuming or mode == MODE.Vacuuming_with_outer):
         error_managers.register(ErrorManager("GL840", "Ch2", inner_vacuum, slack, slack_channel, True, "Pa", "Inner Vacuum", conversion_MPT200AR))
-        string += "\tInner Vacuum: 100--1000 Pa Warning, >1000 Pa Emergency\n"
-    elif (mode == MODE.Filling or mode == MODE.Experiment):
+        string += "\tInner Vacuum: 1--100 Pa Information, 100--1000 Pa Warning, >1000 Pa Emergency\n"
+    elif (mode == MODE.Filling or mode == MODE.Experiment or mode == MODE.Boiling):
         error_managers.register(ErrorManager("GL840", "Ch3", inner_pressure_in_LAr, slack, slack_channel, True, "Bar", "Inner Pressure"))
-        string += "\tInner Pressure: 1.5--1.8 Bar Warning, >1.8 Bar Emergency\n"
+        string += "\tInner Pressure: 1.5--1.6 Caution, 1.6--1.8 Bar Warning, >1.8 Bar Emergency\n"
         error_managers.register(ErrorManager("GL840", "Ch16", top_buffle_temperature, slack, slack_channel, True, "degree", "Top Buffle"))
         string += "\tTop Buffle: -150 -- -180 deg: Warning, <-180 deg: Emergency\n"
     if mode == MODE.Experiment:
-        error_managers.register(ErrorManager("GL840", "Ch1", outer_pressure, slack, slack_channel, True, "Pa", "Outer Pressure", conversion_PKR251))
+        error_managers.register(ErrorManager("GL840", "Ch1", outer_pressure_in_exp, slack, slack_channel, True, "Pa", "Outer Pressure", conversion_PKR251))
         string += "\tOuter Pressure: 1e-3--1e-2 Pa: Warning, >1e-2 Pa: Emergency\n"
-    elif mode == MODE.Boiling:
+    elif mode == MODE.Boiling or mode == MODE.Vacuuming_with_outer:
         error_managers.register(ErrorManager("GL840", "Ch1", outer_pressure, slack, slack_channel, True, "Pa", "Outer Pressure", conversion_PKR251))
         string += "\tOuter Pressure: 1--10 Pa: Warning, >10 Pa: Emergency\n"
+        
     print(string)
-    # slack.send_message(slack_channel, string)
+    slack.edit_message(slack_channel, condition_ts, string)
     return error_managers
 
 
 def __main(mode):
-    mongo = Mongo.MongoDBPuller("192.168.160.8", 27017, "GL840", "GL840")
+    mongo = Mongo.MongoDBPuller("192.168.160.101", 27017, "GL840", "GL840")
     warning = w.Warning()
     if slack_ON:
         slack = Slack.SlackHandler(os.environ['SLACK_TOKEN'])
+        # slack = Slack.SlackHandler("")
         if slack.test():
             print("Slack is ready.")
         else:
@@ -275,7 +286,7 @@ def __main(mode):
         if slack is not None:
             try:
                 slack.send_message(slack_channel, "This is a test message.")
-            except SlackApiError as e:
+            except Exception as e:
                 print(e)
         else:
             print("Slack is not instantiated")
@@ -298,13 +309,14 @@ def __select_mode() -> int:
     print("0: Exit")
     print("1: Normal mode (No vacuuming, no LAr in the chamber)")
     print("2: Vacuuming mode (No LAr in the chamber, vacuuming in progress)")
-    print("3: Filling mode (LAr is being filled)")
-    print("4: Experiment mode (LAr is in the chamber)")
-    print("5: Boiling mode (LAr is being boiled)")
+    print("3: Vacuuming mode with outer (No LAr in the chamber, vacuuming of inner and outer in progress)")
+    print("4: Filling mode (LAr is being filled)")
+    print("5: Experiment mode (LAr is in the chamber)")
+    print("6: Boiling mode (LAr is being boiled)")
     while True:
         try:
             mode = int(input())
-            if mode < -2 or mode > 5:
+            if mode < -2 or mode > 6:
                 raise ValueError
             break
         except ValueError:

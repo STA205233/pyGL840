@@ -315,12 +315,12 @@ class DataAcquisition():
         if self.config.username is not None and self.config.password is not None:
             try:
                 site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", auth=requests.auth.HTTPBasicAuth(self.config.username, self.config.password), timeout=timeout)
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.RequestException:
                 raise GL840ConnectionError(notify=self.warning)
         else:
             try:
                 site_data = requests.get(f"http://{self.config.ip}:{self.config.port}/digital.cgi?chgrp=13", timeout=timeout)
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.RequestException:
                 raise GL840ConnectionError(notify=self.warning)
         if (site_data.text.find("Unauthorized") >= 0):
             raise requests.ConnectionError("Password authorization failed")
